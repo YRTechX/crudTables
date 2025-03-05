@@ -5,7 +5,7 @@
       "name": "Проєкт 1",
       "description": "Опис проєкту 1",
       "taskCount": 2,
-      "status": "active",
+      "status": "Done",
       "createdAt": "2024-03-01"
     },
     {
@@ -13,7 +13,7 @@
       "name": "Проєкт 2",
       "description": "Опис проєкту 2",
       "taskCount": 0,
-      "status": "pending",
+      "status": "To Do",
       "createdAt": "2024-03-02"
     }
   ],
@@ -29,6 +29,38 @@
     {
       "id": 2,
       "projectId": 1,
+      "title": "Завдання 2",
+      "assignee": "Марія",
+      "status": "In Progress",
+      "dueDate": "2024-03-15"
+    },
+    {
+      "id": 3,
+      "projectId": 3,
+      "title": "Завдання 1",
+      "assignee": "Іван",
+      "status": "To Do",
+      "dueDate": "2024-03-10"
+    },
+    {
+      "id": 4,
+      "projectId": 3,
+      "title": "Завдання 2",
+      "assignee": "Марія",
+      "status": "In Progress",
+      "dueDate": "2024-03-15"
+    },
+    {
+      "id": 5,
+      "projectId": 2,
+      "title": "Завдання 1",
+      "assignee": "Іван",
+      "status": "To Do",
+      "dueDate": "2024-03-10"
+    },
+    {
+      "id": 6,
+      "projectId": 2,
       "title": "Завдання 2",
       "assignee": "Марія",
       "status": "In Progress",

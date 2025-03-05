@@ -75,8 +75,10 @@ const actions = {
     }: { commit: (mutation: string, payload: { projectId: number; tasks: Task[] }) => void },
     projectId: number,
   ) {
+    console.log('projectId', projectId)
     try {
       const response = await axios.get(`${BASE_API_URL}/tasks?projectId=${projectId}`)
+      console.log('response with tasks', response)
       commit('setTasks', { projectId, tasks: response.data })
     } catch (error) {
       console.error('Ошибка при загрузке задач:', error)

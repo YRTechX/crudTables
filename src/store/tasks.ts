@@ -1,5 +1,5 @@
-import { Module } from 'vuex'
-import { Task, TaskStatus } from '@/types/task'
+import type { Module } from 'vuex'
+import type { Task } from '@/types/task'
 import axios from 'axios'
 
 export interface TasksState {
@@ -69,17 +69,27 @@ const mutations = {
 }
 
 const actions = {
-  async fetchTasks({ commit }, projectId: number) {
+  async fetchTasks(
+    {
+      commit,
+    }: { commit: (mutation: string, payload: { projectId: number; tasks: Task[] }) => void },
+    projectId: number,
+  ) {
     try {
-      const response = await axios.get(`http://localhost:3000/tasks?projectId=${projectId}`)
+      const response = await axios.get(
+        `${import.meta.env.BASE_API_URL}/tasks?projectId=${projectId}`,
+      )
       commit('setTasks', { projectId, tasks: response.data })
     } catch (error) {
       console.error('Ошибка при загрузке задач:', error)
     }
   },
-  async addTask({ commit }, { projectId, task }: { projectId: number; task: Task }) {
+  async addTask(
+    { commit }: { commit: (mutation: string, payload: { projectId: number; task: Task }) => void },
+    { projectId, task }: { projectId: number; task: Task },
+  ) {
     try {
-      const response = await axios.post('http://localhost:3000/tasks', {
+      const response = await axios.post(`${import.meta.env.BASE_API_URL}/tasks`, {
         ...task,
         projectId,
         id: Date.now(),
@@ -89,17 +99,25 @@ const actions = {
       console.error('Ошибка при добавлении задачи:', error)
     }
   },
-  async updateTask({ commit }, { projectId, task }: { projectId: number; task: Task }) {
+  async updateTask(
+    { commit }: { commit: (mutation: string, payload: { projectId: number; task: Task }) => void },
+    { projectId, task }: { projectId: number; task: Task },
+  ) {
     try {
-      const response = await axios.put(`http://localhost:3000/tasks/${task.id}`, task)
+      const response = await axios.put(`${import.meta.env.BASE_API_URL}/tasks/${task.id}`, task)
       commit('updateTask', { projectId, task: response.data })
     } catch (error) {
       console.error('Ошибка при обновлении задачи:', error)
     }
   },
-  async deleteTask({ commit }, { projectId, taskId }: { projectId: number; taskId: number }) {
+  async deleteTask(
+    {
+      commit,
+    }: { commit: (mutation: string, payload: { projectId: number; taskId: number }) => void },
+    { projectId, taskId }: { projectId: number; taskId: number },
+  ) {
     try {
-      await axios.delete(`http://localhost:3000/tasks/${taskId}`)
+      await axios.delete(`${import.meta.env.BASE_API_URL}/tasks/${taskId}`)
       commit('deleteTask', { projectId, taskId })
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)

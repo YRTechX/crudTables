@@ -1,6 +1,5 @@
 import type { Module } from 'vuex'
 import type { Project } from '@/types/project'
-import type { Task } from '@/types/task'
 import axios from 'axios'
 import type { Statuses } from '@/types/common'
 

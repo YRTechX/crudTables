@@ -2,7 +2,7 @@ import type { Module } from 'vuex'
 import type { Project } from '@/types/project'
 import axios from 'axios'
 import type { Statuses } from '@/types/common'
-
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 export interface ProjectsState {
   projects: Project[]
   columnWidths: Record<string, number>
@@ -41,8 +41,9 @@ const mutations = {
 
 const actions = {
   async fetchProjects({ commit }: { commit: (mutation: string, payload: Project[]) => void }) {
+    console.log('fetchProjects', BASE_API_URL)
     try {
-      const response = await axios.get(`${import.meta.env.BASE_API_URL}/projects`)
+      const response = await axios.get(`${BASE_API_URL}/projects`)
       commit('setProjects', response.data)
     } catch (error) {
       console.error('Ошибка при загрузке проектов:', error)
@@ -53,7 +54,7 @@ const actions = {
     project: { name: string; description: string },
   ) {
     try {
-      const response = await axios.post(`${import.meta.env.BASE_API_URL}/projects`, {
+      const response = await axios.post(`${BASE_API_URL}/projects`, {
         ...project,
         taskCount: 0,
         status: 'To Do' as Statuses,
@@ -69,10 +70,7 @@ const actions = {
     project: Project,
   ) {
     try {
-      const response = await axios.put(
-        `${import.meta.env.BASE_API_URL}/projects/${project.id}`,
-        project,
-      )
+      const response = await axios.put(`${BASE_API_URL}/projects/${project.id}`, project)
       commit('updateProject', response.data)
     } catch (error) {
       console.error('Ошибка при обновлении проекта:', error)
@@ -83,7 +81,7 @@ const actions = {
     projectId: number,
   ) {
     try {
-      await axios.delete(`${import.meta.env.BASE_API_URL}/projects/${projectId}`)
+      await axios.delete(`${BASE_API_URL}/projects/${projectId}`)
       commit('deleteProject', projectId)
     } catch (error) {
       console.error('Ошибка при удалении проекта:', error)

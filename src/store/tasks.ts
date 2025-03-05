@@ -1,7 +1,7 @@
 import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
-
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 export interface TasksState {
   tasks: Record<number, Task[]>
   columnWidths: Record<string, number>
@@ -76,9 +76,7 @@ const actions = {
     projectId: number,
   ) {
     try {
-      const response = await axios.get(
-        `${import.meta.env.BASE_API_URL}/tasks?projectId=${projectId}`,
-      )
+      const response = await axios.get(`${BASE_API_URL}/tasks?projectId=${projectId}`)
       commit('setTasks', { projectId, tasks: response.data })
     } catch (error) {
       console.error('Ошибка при загрузке задач:', error)
@@ -89,7 +87,7 @@ const actions = {
     { projectId, task }: { projectId: number; task: Task },
   ) {
     try {
-      const response = await axios.post(`${import.meta.env.BASE_API_URL}/tasks`, {
+      const response = await axios.post(`${BASE_API_URL}/tasks`, {
         ...task,
         projectId,
         id: Date.now(),
@@ -104,7 +102,7 @@ const actions = {
     { projectId, task }: { projectId: number; task: Task },
   ) {
     try {
-      const response = await axios.put(`${import.meta.env.BASE_API_URL}/tasks/${task.id}`, task)
+      const response = await axios.put(`${BASE_API_URL}/tasks/${task.id}`, task)
       commit('updateTask', { projectId, task: response.data })
     } catch (error) {
       console.error('Ошибка при обновлении задачи:', error)
@@ -117,7 +115,7 @@ const actions = {
     { projectId, taskId }: { projectId: number; taskId: number },
   ) {
     try {
-      await axios.delete(`${import.meta.env.BASE_API_URL}/tasks/${taskId}`)
+      await axios.delete(`${BASE_API_URL}/tasks/${taskId}`)
       commit('deleteTask', { projectId, taskId })
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)

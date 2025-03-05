@@ -1,0 +1,38 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "name": "Проєкт 1",
+      "description": "Опис проєкту 1",
+      "taskCount": 2,
+      "status": "active",
+      "createdAt": "2024-03-01"
+    },
+    {
+      "id": 2,
+      "name": "Проєкт 2",
+      "description": "Опис проєкту 2",
+      "taskCount": 0,
+      "status": "pending",
+      "createdAt": "2024-03-02"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "projectId": 1,
+      "title": "Завдання 1",
+      "assignee": "Іван",
+      "status": "To Do",
+      "dueDate": "2024-03-10"
+    },
+    {
+      "id": 2,
+      "projectId": 1,
+      "title": "Завдання 2",
+      "assignee": "Марія",
+      "status": "In Progress",
+      "dueDate": "2024-03-15"
+    }
+  ]
+}

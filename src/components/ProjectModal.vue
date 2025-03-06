@@ -1,41 +1,36 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
+  <v-dialog
+    :model-value="modelValue"
+    max-width="500px"
+    @update:model-value="emit('update:modelValue', $event)"
+    :persistent="persistent"
+  >
     <v-card>
-      <v-card-title>Додати проєкт</v-card-title>
+      <v-card-title>
+        <slot name="title"></slot>
+      </v-card-title>
       <v-card-text>
-        <v-form @submit.prevent="submit">
-          <v-text-field
-            v-model="project.name"
-            label="Назва проєкту"
-            required
-            :rules="[(v) => !!v || 'Назва обов’язкова']"
-          ></v-text-field>
-          <v-textarea v-model="project.description" label="Опис проєкту" rows="3"></v-textarea>
-          <v-btn type="submit" color="primary">Зберегти</v-btn>
-          <v-btn @click="close" color="secondary">Скасувати</v-btn>
-        </v-form>
+        <slot name="content"></slot>
       </v-card-text>
+      <v-card-actions>
+        <slot name="actions"></slot>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, withDefaults } from 'vue'
 
-const props = defineProps<{
-  project: { name: string; description: string }
-}>()
+withDefaults(
+  defineProps<{
+    modelValue: boolean
+    persistent?: boolean
+  }>(),
+  {
+    persistent: false,
+  },
+)
 
-const emit = defineEmits(['save', 'close'])
-
-const dialog = ref(true)
-const project = ref({ ...props.project })
-
-function submit() {
-  emit('save', { ...project.value })
-}
-
-function close() {
-  emit('close')
-}
+const emit = defineEmits(['update:modelValue'])
 </script>

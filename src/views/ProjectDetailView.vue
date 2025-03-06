@@ -45,6 +45,7 @@
       v-if="newTask"
       v-model="modals.createTask"
       :loading="isLoading"
+      :persistent="isLoading"
       @update:modelValue="modals.createTask = $event"
     >
       <template #title>Додати завдання</template>
@@ -84,10 +85,15 @@
           variant="elevated"
           class="blue-btn"
           :loading="isLoading"
+          :disabled="isLoading"
           @click="saveTask"
           >Зберегти</v-btn
         >
-        <v-btn color="secondary" variant="elevated" @click="closeModal('createTask')"
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('createTask')"
           >Скасувати</v-btn
         >
       </template>
@@ -97,6 +103,7 @@
       v-if="editingTask"
       v-model="modals.editTask"
       :loading="isLoading"
+      :persistent="isLoading"
       @update:modelValue="modals.editTask = $event"
     >
       <template #title>Редагувати завдання</template>
@@ -136,11 +143,15 @@
           variant="elevated"
           class="blue-btn"
           :loading="isLoading"
+          :disabled="isLoading"
           @click="editTask"
+          >Зберегти</v-btn
         >
-          Зберегти
-        </v-btn>
-        <v-btn color="secondary" variant="elevated" @click="closeModal('editTask')"
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('editTask')"
           >Скасувати</v-btn
         >
       </template>
@@ -150,18 +161,27 @@
       v-if="deletingTask"
       v-model="modals.deleteTask"
       :loading="isLoading"
-      @update:modelValue="modals.deleteTask = $event"
       :persistent="true"
+      @update:modelValue="modals.deleteTask = $event"
     >
       <template #title>Підтвердження видалення</template>
       <template #content>
         <p>Ви впевнені, що хочете видалити завдання "{{ deletingTask?.title }}"?</p>
       </template>
       <template #actions>
-        <v-btn color="error" variant="elevated" :loading="isLoading" @click="deleteTask"
+        <v-btn
+          color="error"
+          variant="elevated"
+          :loading="isLoading"
+          :disabled="isLoading"
+          @click="deleteTask"
           >Видалити</v-btn
         >
-        <v-btn color="secondary" variant="elevated" @click="closeModal('deleteTask')"
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('deleteTask')"
           >Скасувати</v-btn
         >
       </template>
@@ -171,7 +191,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router' // Добавлен useRouter
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import TasksTable from '@/components/TasksTable.vue'
 import CustomModal from '@/components/CustomModal.vue'
@@ -180,7 +200,7 @@ import type { Project } from '@/types/project'
 import { imitateLoadingTime } from '@/utills/functions'
 
 const route = useRoute()
-const router = useRouter() // Инициализируем useRouter
+const router = useRouter()
 const store = useStore()
 const projectId = route.params.projectId
 const search = ref('')

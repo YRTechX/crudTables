@@ -23,6 +23,7 @@
       v-if="newProject"
       v-model="modals.create"
       :loading="isLoading"
+      :persistent="isLoading"
       @update:modelValue="modals.create = $event"
     >
       <template #title>Додати проєкт</template>
@@ -43,10 +44,17 @@
           variant="elevated"
           class="blue-btn"
           :loading="isLoading"
+          :disabled="isLoading"
           @click="createProject"
           >Зберегти</v-btn
         >
-        <v-btn color="secondary" variant="elevated" @click="closeModal('create')">Скасувати</v-btn>
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('create')"
+          >Скасувати</v-btn
+        >
       </template>
     </CustomModal>
 
@@ -54,6 +62,7 @@
       v-if="editingProject"
       v-model="modals.edit"
       :loading="isLoading"
+      :persistent="isLoading"
       @update:modelValue="modals.edit = $event"
     >
       <template #title>Редагувати проєкт</template>
@@ -84,10 +93,17 @@
           variant="elevated"
           class="blue-btn"
           :loading="isLoading"
+          :disabled="isLoading"
           @click="editProject"
           >Зберегти</v-btn
         >
-        <v-btn color="secondary" variant="elevated" @click="closeModal('edit')">Скасувати</v-btn>
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('edit')"
+          >Скасувати</v-btn
+        >
       </template>
     </CustomModal>
 
@@ -95,18 +111,29 @@
       v-if="deletingProject"
       v-model="modals.delete"
       :loading="isLoading"
-      @update:modelValue="modals.delete = $event"
       :persistent="true"
+      @update:modelValue="modals.delete = $event"
     >
       <template #title>Підтвердження видалення</template>
       <template #content>
         <p>Ви впевнені, що хочете видалити проєкт "{{ deletingProject?.name }}"?</p>
       </template>
       <template #actions>
-        <v-btn color="error" variant="elevated" :loading="isLoading" @click="deleteProject"
+        <v-btn
+          color="error"
+          variant="elevated"
+          :loading="isLoading"
+          :disabled="isLoading"
+          @click="deleteProject"
           >Видалити</v-btn
         >
-        <v-btn color="secondary" variant="elevated" @click="closeModal('delete')">Скасувати</v-btn>
+        <v-btn
+          color="secondary"
+          variant="elevated"
+          :disabled="isLoading"
+          @click="closeModal('delete')"
+          >Скасувати</v-btn
+        >
       </template>
     </CustomModal>
   </v-container>

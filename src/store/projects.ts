@@ -2,7 +2,12 @@ import type { Module } from 'vuex'
 import { Project } from '@/types/project'
 import axios from 'axios'
 import type { Statuses, NumberOrString } from '@/types/common'
+import { useToast } from 'vue-toastification'
+
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
+
+// Инициализируем toast
+const toast = useToast()
 
 export interface ProjectsState {
   projects: Project[]
@@ -57,6 +62,7 @@ const actions = {
       commit('setProjects', response.data)
     } catch (error) {
       console.error('Ошибка при загрузке проектов:', error)
+      toast.error('Помилка при завантаженні проектів')
     }
   },
   async fetchProjectById(
@@ -73,6 +79,7 @@ const actions = {
         commit('setProject', response.data)
       } catch (error) {
         console.error(`Ошибка при загрузке проекта с ID ${projectId}:`, error)
+        toast.error(`Помилка при завантаженні проекту з ID ${projectId}`)
       }
     }
   },
@@ -89,8 +96,11 @@ const actions = {
       }
       const response = await axios.post(`${BASE_API_URL}/projects`, newProject)
       commit('addProject', response.data)
+      toast.success('Проект успішно додано!')
     } catch (error) {
       console.error('Ошибка при добавлении проекта:', error)
+      toast.error('Помилка при додаванні проекту')
+      throw error
     }
   },
   async updateProject(
@@ -100,8 +110,11 @@ const actions = {
     try {
       const response = await axios.put(`${BASE_API_URL}/projects/${project.id}`, project)
       commit('updateProject', response.data)
+      toast.success('Проект успішно оновлено!')
     } catch (error) {
       console.error('Ошибка при обновлении проекта:', error)
+      toast.error('Помилка при оновленні проекту')
+      throw error
     }
   },
   async deleteProject(
@@ -112,7 +125,7 @@ const actions = {
     }: {
       commit: (mutation: string, payload: string | number) => void
       rootGetters: any
-      dispatch: (action: string, payload: any, options?: any) => Promise<void> // Уточняем тип dispatch
+      dispatch: (action: string, payload: any, options?: any) => Promise<void>
     },
     projectId: string | number,
   ) {
@@ -125,8 +138,10 @@ const actions = {
 
       await axios.delete(`${BASE_API_URL}/projects/${projectId}`)
       commit('deleteProject', projectId)
+      toast.success('Проект успішно видалено!')
     } catch (error) {
       console.error('Ошибка при удалении проекта или связанных задач:', error)
+      toast.error('Помилка при видаленні проекту або пов’язаних завдань')
       throw error
     }
   },

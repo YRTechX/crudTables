@@ -2,7 +2,11 @@ import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
 import type { NumberOrString } from '@/types/common'
+import { useToast } from 'vue-toastification'
+
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
+
+const toast = useToast()
 
 export interface TasksState {
   tasks: Task[]
@@ -63,13 +67,13 @@ const actions = {
     { commit }: { commit: (mutation: string, payload: Task[]) => void },
     projectId: string,
   ) {
-    console.log('projectId in fetch tasks', projectId)
     try {
       const response = await axios.get(`${BASE_API_URL}/tasks?projectId=${projectId}`)
       console.log('response with tasks', response)
       commit('setTasks', response.data)
     } catch (error) {
       console.error('Ошибка при загрузке задач:', error)
+      toast.error('Помилка при завантаженні завдань')
     }
   },
   async addTask({ commit }: { commit: (mutation: string, payload: Task) => void }, task: Task) {
@@ -79,16 +83,22 @@ const actions = {
         id: Date.now(),
       })
       commit('addTask', response.data)
+      toast.success('Завдання успішно додано!')
     } catch (error) {
       console.error('Ошибка при добавлении задачи:', error)
+      toast.error('Помилка при додаванні завдання')
+      throw error
     }
   },
   async updateTask({ commit }: { commit: (mutation: string, payload: Task) => void }, task: Task) {
     try {
       const response = await axios.put(`${BASE_API_URL}/tasks/${task.id}`, task)
       commit('updateTask', response.data)
+      toast.success('Завдання успішно оновлено!')
     } catch (error) {
       console.error('Ошибка при обновлении задачи:', error)
+      toast.error('Помилка при оновленні завдання')
+      throw error
     }
   },
   async deleteTask(
@@ -98,8 +108,10 @@ const actions = {
     try {
       await axios.delete(`${BASE_API_URL}/tasks/${String(taskId)}`)
       commit('deleteTask', taskId)
+      toast.success('Завдання успішно видалено!')
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)
+      toast.error('Помилка при видаленні завдання')
     }
   },
 }

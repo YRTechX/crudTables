@@ -32,6 +32,7 @@
     </v-card>
 
     <CustomModal
+      v-if="newTask"
       v-model="modals.createTask"
       :loading="isLoading"
       @update:modelValue="modals.createTask = $event"
@@ -83,6 +84,7 @@
     </CustomModal>
 
     <CustomModal
+      v-if="editingTask"
       v-model="modals.editTask"
       :loading="isLoading"
       @update:modelValue="modals.editTask = $event"
@@ -135,6 +137,7 @@
     </CustomModal>
 
     <CustomModal
+      v-if="deletingTask"
       v-model="modals.deleteTask"
       :loading="isLoading"
       @update:modelValue="modals.deleteTask = $event"

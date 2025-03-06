@@ -20,6 +20,7 @@
     </v-card>
 
     <CustomModal
+      v-if="newProject"
       v-model="modals.create"
       :loading="isLoading"
       @update:modelValue="modals.create = $event"
@@ -50,6 +51,7 @@
     </CustomModal>
 
     <CustomModal
+      v-if="editingProject"
       v-model="modals.edit"
       :loading="isLoading"
       @update:modelValue="modals.edit = $event"
@@ -90,6 +92,7 @@
     </CustomModal>
 
     <CustomModal
+      v-if="deletingProject"
       v-model="modals.delete"
       :loading="isLoading"
       @update:modelValue="modals.delete = $event"
@@ -128,7 +131,7 @@ const modals = reactive({
   delete: false,
 })
 const newProject = ref<Partial<Project>>({ name: '', description: '' })
-const editingProject = ref<Partial<Project>>({ name: '', description: '' })
+const editingProject = ref<Partial<Project> | null>(null)
 const deletingProject = ref<Project | null>(null)
 const createForm = ref()
 const editForm = ref()

@@ -6,7 +6,6 @@ import { useToast } from 'vue-toastification'
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 
-// Инициализируем toast
 const toast = useToast()
 
 export interface ProjectsState {
@@ -72,15 +71,12 @@ const actions = {
     }: { commit: (mutation: string, payload: Project) => void; state: ProjectsState },
     projectId: NumberOrString,
   ) {
-    const existingProject = state.projects.find((p) => p.id === projectId)
-    if (!existingProject) {
-      try {
-        const response = await axios.get(`${BASE_API_URL}/projects/${projectId}`)
-        commit('setProject', response.data)
-      } catch (error) {
-        console.error(`Ошибка при загрузке проекта с ID ${projectId}:`, error)
-        toast.error(`Помилка при завантаженні проекту з ID ${projectId}`)
-      }
+    try {
+      const response = await axios.get(`${BASE_API_URL}/projects/${projectId}`)
+      commit('setProject', response.data)
+    } catch (error) {
+      console.error(`Ошибка при загрузке проекта с ID ${projectId}:`, error)
+      toast.error(`Помилка при завантаженні проекту з ID ${projectId}`)
     }
   },
   async addProject(
@@ -133,7 +129,7 @@ const actions = {
       const tasksToDelete = rootGetters['tasks/getTasksByProjectId'](projectId)
 
       for (const task of tasksToDelete) {
-        await dispatch('tasks/deleteTask', task.id, { root: true })
+        await dispatch('tasks/deleteTask', task, { root: true })
       }
 
       await axios.delete(`${BASE_API_URL}/projects/${projectId}`)

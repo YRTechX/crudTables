@@ -259,7 +259,6 @@ const taskHeaders = [
   { title: 'Дії', key: 'actions', sortable: false, width: 100 },
 ]
 
-// Правила валидации для dueDate
 const dueDateRules = [
   (v: string) => !!v || 'Термін обов’язковий',
   (v: string) => {
@@ -327,7 +326,7 @@ async function deleteTask() {
   if (deletingTask.value) {
     isLoading.value = true
     await imitateLoadingTime(1500)
-    await store.dispatch('tasks/deleteTask', deletingTask.value.id)
+    await store.dispatch('tasks/deleteTask', deletingTask.value)
     closeModal('deleteTask')
     isLoading.value = false
   }

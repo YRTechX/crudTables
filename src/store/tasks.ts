@@ -76,7 +76,16 @@ const actions = {
       toast.error('Помилка при завантаженні завдань')
     }
   },
-  async addTask({ commit }: { commit: (mutation: string, payload: Task) => void }, task: Task) {
+  async addTask(
+    {
+      commit,
+      dispatch,
+    }: {
+      commit: (mutation: string, payload: Task) => void
+      dispatch: (action: string, payload?: any, options?: { root: boolean }) => Promise<any>
+    },
+    task: Task,
+  ) {
     try {
       const response = await axios.post(`${BASE_API_URL}/tasks`, {
         ...task,
@@ -84,6 +93,8 @@ const actions = {
       })
       commit('addTask', response.data)
       toast.success('Завдання успішно додано!')
+
+      await dispatch('projects/fetchProjectById', task.projectId, { root: true })
     } catch (error) {
       console.error('Ошибка при добавлении задачи:', error)
       toast.error('Помилка при додаванні завдання')
@@ -102,13 +113,21 @@ const actions = {
     }
   },
   async deleteTask(
-    { commit }: { commit: (mutation: string, payload: number) => void },
-    taskId: NumberOrString,
+    {
+      commit,
+      dispatch,
+    }: {
+      commit: (mutation: string, payload: number) => void
+      dispatch: (action: string, payload: any) => Promise<any>
+    },
+    task: Task,
   ) {
     try {
-      await axios.delete(`${BASE_API_URL}/tasks/${String(taskId)}`)
-      commit('deleteTask', taskId)
+      await axios.delete(`${BASE_API_URL}/tasks/${String(task.id)}`)
+      commit('deleteTask', task.id)
       toast.success('Завдання успішно видалено!')
+
+      await dispatch('projects/fetchProjectById', task.projectId, { root: true })
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)
       toast.error('Помилка при видаленні завдання')

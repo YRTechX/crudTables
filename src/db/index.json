@@ -107,38 +107,6 @@
   ],
   "tasks": [
     {
-      "id": "1741275699126",
-      "title": "sdfsdf",
-      "assignee": "Марія",
-      "status": "In Progress",
-      "dueDate": "0021-03-12",
-      "projectId": null
-    },
-    {
-      "id": "1741275789776",
-      "title": "dfgdfg",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2342-04-23",
-      "projectId": null
-    },
-    {
-      "id": "1741276117529",
-      "title": "test 1",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "123123-03-21",
-      "projectId": null
-    },
-    {
-      "id": "1741276124618",
-      "title": "sdfgdfg",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "12312-03-12",
-      "projectId": null
-    },
-    {
       "id": "1741276171233",
       "title": "dfgdfg",
       "assignee": "Марія",

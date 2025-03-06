@@ -1,5 +1,5 @@
 import type { Module } from 'vuex'
-import type { Project } from '@/types/project'
+import { Project } from '@/types/project'
 import axios from 'axios'
 import type { Statuses } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
@@ -54,12 +54,13 @@ const actions = {
     project: { name: string; description: string },
   ) {
     try {
-      const response = await axios.post(`${BASE_API_URL}/projects`, {
+      const newProject: Project = {
         ...project,
         taskCount: 0,
-        status: 'To Do' as Statuses,
+        status: 'To Do',
         createdAt: new Date().toISOString().split('T')[0],
-      })
+      }
+      const response = await axios.post(`${BASE_API_URL}/projects`, newProject)
       commit('addProject', response.data)
     } catch (error) {
       console.error('Ошибка при добавлении проекта:', error)

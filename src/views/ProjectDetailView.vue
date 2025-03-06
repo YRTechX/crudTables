@@ -15,7 +15,7 @@
       <v-card-title>
         Завдання
         <div class="pt-2 text-end">
-          <v-btn color="primary" @click="modals.createTask = true">Додати завдання</v-btn>
+          <v-btn class="blue-btn" @click="modals.createTask = true">Додати завдання</v-btn>
         </div>
       </v-card-title>
       <v-card-text>
@@ -72,7 +72,7 @@
         <v-btn
           type="submit"
           variant="elevated"
-          color="primary"
+          class="blue-btn"
           :loading="isLoading"
           @click="saveTask"
           >Зберегти</v-btn
@@ -124,7 +124,7 @@
         <v-btn
           type="submit"
           variant="elevated"
-          color="primary"
+          class="blue-btn"
           :loading="isLoading"
           @click="editTask"
         >

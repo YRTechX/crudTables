@@ -4,7 +4,7 @@
       <v-card-title>
         Проєкти
         <div class="pt-2 text-end">
-          <v-btn color="primary" @click="modals.create = true">Додати проєкт</v-btn>
+          <v-btn class="blue-btn" @click="modals.create = true">Додати проєкт</v-btn>
         </div>
       </v-card-title>
       <v-card-text>
@@ -41,7 +41,7 @@
         <v-btn
           type="submit"
           variant="elevated"
-          color="primary"
+          class="blue-btn"
           :loading="isLoading"
           @click="createProject"
           >Зберегти</v-btn
@@ -82,7 +82,7 @@
         <v-btn
           type="submit"
           variant="elevated"
-          color="primary"
+          class="blue-btn"
           :loading="isLoading"
           @click="editProject"
           >Зберегти</v-btn

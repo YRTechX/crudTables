@@ -2,4 +2,18 @@
 
 #app {
   min-height: 100vh;
+  background-color: var(--app-main-bg);
+}
+
+:root {
+  --app-main-bg: #f8f9fa;
+  --app-table-header-bg: #fafafa;
+  --app-main-btn-bg: #1677ff;
+}
+.custom-header thead {
+  background-color: var(--app-table-header-bg);
+}
+.blue-btn {
+  background-color: var(--app-main-btn-bg) !important;
+  color: white !important;
 }

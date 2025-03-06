@@ -3,7 +3,7 @@
     :headers="headers"
     :items="tasks"
     :items-per-page="10"
-    class="elevation-1"
+    class="elevation-1 custom-header"
     :sort-by="sortBy"
     @update:sort-by="updateSort"
     @update:options="updateWidths"
@@ -70,9 +70,4 @@ function updateWidths(options: any) {
 } */
 </script>
 
-<style scoped>
-/* Стили можно оставить минимальными, так как v-data-table имеет свои стили */
-.elevation-1 {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-</style>
+<style></style>

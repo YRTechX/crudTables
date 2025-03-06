@@ -3,7 +3,7 @@
     :headers="headers"
     :items="projects"
     :items-per-page="10"
-    class="elevation-1"
+    class="elevation-1 custom-header"
     :sort-by="sortBy"
     @update:sort-by="updateSort"
     @update:options="updateWidths"

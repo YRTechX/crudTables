@@ -1,41 +1,9 @@
 {
   "projects": [
     {
-      "id": "1",
-      "name": "Проєкт 1",
-      "description": "Опис проєкту 1",
-      "taskCount": 2,
-      "status": "Done",
-      "createdAt": "2024-03-01"
-    },
-    {
-      "id": "2",
-      "name": "Проєкт 2",
-      "description": "Опис проєкту 2",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2024-03-02"
-    },
-    {
-      "id": "779f",
-      "name": "fffff",
-      "description": "",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": "73de",
       "name": "New project",
       "description": "Opisanie",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": "a9b0",
-      "name": "New new",
-      "description": "descr",
       "taskCount": 0,
       "status": "To Do",
       "createdAt": "2025-03-06"
@@ -49,40 +17,8 @@
       "createdAt": "2025-03-06"
     },
     {
-      "id": "4650",
-      "name": "dsfsd",
-      "description": "",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": "7395",
-      "name": "New projects",
-      "description": "",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": "03fb",
-      "name": "dfdffd",
-      "description": "dffd",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": "bbe9",
       "name": "new York",
-      "description": "",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": "d4c1",
-      "name": "dfdffdfd",
       "description": "",
       "taskCount": 0,
       "status": "To Do",
@@ -105,62 +41,70 @@
       "createdAt": "2025-03-06"
     },
     {
-      "id": "1193",
-      "name": "new 2 new",
-      "description": "dfdsfsdfsdfsdfsdfsdf",
+      "id": "d7df",
+      "name": "sdfdsf",
+      "description": "sdfsdf",
       "taskCount": 0,
-      "status": "Done",
+      "status": "To Do",
+      "createdAt": "2025-03-06"
+    },
+    {
+      "id": "182e",
+      "name": "xcgdfg",
+      "description": "dfgdfg",
+      "taskCount": 0,
+      "status": "To Do",
       "createdAt": "2025-03-06"
     }
   ],
   "tasks": [
     {
-      "id": "1",
-      "projectId": 1,
-      "title": "Завдання 1",
-      "assignee": "Іван",
-      "status": "To Do",
-      "dueDate": "2024-03-10"
-    },
-    {
-      "id": "2",
-      "projectId": 1,
-      "title": "Завдання 2",
+      "id": "1741275699126",
+      "title": "sdfsdf",
       "assignee": "Марія",
       "status": "In Progress",
-      "dueDate": "2024-03-15"
+      "dueDate": "0021-03-12",
+      "projectId": null
     },
     {
-      "id": "3",
-      "projectId": 3,
-      "title": "Завдання 1",
+      "id": "1741275789776",
+      "title": "dfgdfg",
+      "assignee": "Марія",
+      "status": "To Do",
+      "dueDate": "2342-04-23",
+      "projectId": null
+    },
+    {
+      "id": 1741276117529,
+      "title": "test 1",
+      "assignee": "Марія",
+      "status": "To Do",
+      "dueDate": "123123-03-21",
+      "projectId": null
+    },
+    {
+      "id": 1741276124618,
+      "title": "sdfgdfg",
+      "assignee": "Олександр",
+      "status": "To Do",
+      "dueDate": "12312-03-12",
+      "projectId": null
+    },
+    {
+      "id": 1741276171233,
+      "title": "dfgdfg",
+      "assignee": "Марія",
+      "status": "To Do",
+      "dueDate": "23342-04-23",
+      "projectId": "182e"
+    },
+    {
+      "id": 1741276971391,
+      "title": "ываыв",
       "assignee": "Іван",
       "status": "To Do",
-      "dueDate": "2024-03-10"
-    },
-    {
-      "id": "4",
-      "projectId": 3,
-      "title": "Завдання 2",
-      "assignee": "Марія",
-      "status": "In Progress",
-      "dueDate": "2024-03-15"
-    },
-    {
-      "id": "5",
-      "projectId": 2,
-      "title": "Завдання 1",
-      "assignee": "Іван",
-      "status": "To Do",
-      "dueDate": "2024-03-10"
-    },
-    {
-      "id": "6",
-      "projectId": 2,
-      "title": "Завдання 2",
-      "assignee": "Марія",
-      "status": "In Progress",
-      "dueDate": "2024-03-15"
+      "dueDate": "12222-02-21",
+      "projectId": "182e"
     }
   ]
 }

@@ -19,7 +19,7 @@
       </v-card-text>
     </v-card>
 
-    <ProjectModal
+    <CustomModal
       v-model="modals.create"
       :loading="isLoading"
       @update:modelValue="modals.create = $event"
@@ -47,9 +47,9 @@
         >
         <v-btn color="secondary" variant="elevated" @click="closeModal('create')">Скасувати</v-btn>
       </template>
-    </ProjectModal>
+    </CustomModal>
 
-    <ProjectModal
+    <CustomModal
       v-model="modals.edit"
       :loading="isLoading"
       @update:modelValue="modals.edit = $event"
@@ -87,9 +87,9 @@
         >
         <v-btn color="secondary" variant="elevated" @click="closeModal('edit')">Скасувати</v-btn>
       </template>
-    </ProjectModal>
+    </CustomModal>
 
-    <ProjectModal
+    <CustomModal
       v-model="modals.delete"
       :loading="isLoading"
       @update:modelValue="modals.delete = $event"
@@ -105,7 +105,7 @@
         >
         <v-btn color="secondary" variant="elevated" @click="closeModal('delete')">Скасувати</v-btn>
       </template>
-    </ProjectModal>
+    </CustomModal>
   </v-container>
 </template>
 
@@ -114,7 +114,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import ProjectsTable from '@/components/ProjectsTable.vue'
-import ProjectModal from '@/components/ProjectModal.vue'
+import CustomModal from '@/components/CustomModal.vue'
 import type { Project } from '@/types/project'
 import { imitateLoadingTime } from '@/utills/functions'
 
@@ -188,7 +188,7 @@ async function createProject() {
   if (isValid?.valid) {
     try {
       isLoading.value = true
-      await imitateLoadingTime(3000)
+      await imitateLoadingTime(1500)
       await store.dispatch('projects/addProject', newProject.value)
       closeModal('create')
     } catch (error: any) {

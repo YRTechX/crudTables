@@ -1,6 +1,6 @@
 import type { Statuses } from '@/types/common'
 export interface Project {
-  id?: string
+  id?: string | number
   name: string
   description: string
   taskCount: number

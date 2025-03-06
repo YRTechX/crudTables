@@ -136,8 +136,6 @@ const deletingProject = ref<Project | null>(null)
 const createForm = ref()
 const editForm = ref()
 const isLoading = ref(false)
-const errorMessage = ref('')
-const errorSnackbar = ref(false)
 
 const headers = [
   { title: 'ID', key: 'id', sortable: true, width: 100 },
@@ -189,17 +187,11 @@ async function closeModal(modalType: 'create' | 'edit' | 'delete') {
 async function createProject() {
   const isValid = await createForm.value?.validate()
   if (isValid?.valid) {
-    try {
-      isLoading.value = true
-      await imitateLoadingTime(1500)
-      await store.dispatch('projects/addProject', newProject.value)
-      closeModal('create')
-    } catch (error: any) {
-      errorMessage.value = error.message || 'Помилка при створенні проєкту'
-      errorSnackbar.value = true
-    } finally {
-      isLoading.value = false
-    }
+    isLoading.value = true
+    await imitateLoadingTime(1500)
+    await store.dispatch('projects/addProject', newProject.value)
+    closeModal('create')
+    isLoading.value = false
   }
 }
 
@@ -211,17 +203,11 @@ function openEditModal(project: Project) {
 async function editProject() {
   const isValid = await editForm.value?.validate()
   if (isValid?.valid) {
-    try {
-      isLoading.value = true
-      await imitateLoadingTime(3000)
-      await store.dispatch('projects/updateProject', editingProject.value)
-      closeModal('edit')
-    } catch (error: any) {
-      errorMessage.value = error.message || 'Помилка при редагуванні проєкту'
-      errorSnackbar.value = true
-    } finally {
-      isLoading.value = false
-    }
+    isLoading.value = true
+    await imitateLoadingTime(3000)
+    await store.dispatch('projects/updateProject', editingProject.value)
+    closeModal('edit')
+    isLoading.value = false
   }
 }
 
@@ -232,17 +218,11 @@ function openDeleteModal(project: Project) {
 
 async function deleteProject() {
   if (deletingProject.value) {
-    try {
-      isLoading.value = true
-      await imitateLoadingTime(3000)
-      await store.dispatch('projects/deleteProject', deletingProject.value.id)
-      closeModal('delete')
-    } catch (error: any) {
-      errorMessage.value = error.message || 'Помилка при видаленні проєкту'
-      errorSnackbar.value = true
-    } finally {
-      isLoading.value = false
-    }
+    isLoading.value = true
+    await imitateLoadingTime(3000)
+    await store.dispatch('projects/deleteProject', deletingProject.value.id)
+    closeModal('delete')
+    isLoading.value = false
   }
 }
 </script>

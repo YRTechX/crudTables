@@ -1,8 +1,9 @@
 import type { Module } from 'vuex'
 import { Project } from '@/types/project'
 import axios from 'axios'
-import type { Statuses } from '@/types/common'
+import type { Statuses, NumberOrString } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
+
 export interface ProjectsState {
   projects: Project[]
   columnWidths: Record<string, number>
@@ -29,13 +30,22 @@ const mutations = {
     }
     localStorage.setItem('projects', JSON.stringify(state.projects))
   },
-  deleteProject(state: ProjectsState, projectId: number) {
+  deleteProject(state: ProjectsState, projectId: NumberOrString) {
     state.projects = state.projects.filter((p) => p.id !== projectId)
     localStorage.setItem('projects', JSON.stringify(state.projects))
   },
   updateColumnWidths(state: ProjectsState, widths: Record<string, number>) {
     state.columnWidths = widths
     localStorage.setItem('projectColumnWidths', JSON.stringify(widths))
+  },
+  setProject(state: ProjectsState, project: Project) {
+    const index = state.projects.findIndex((p) => p.id === project.id)
+    if (index !== -1) {
+      state.projects[index] = project
+    } else {
+      state.projects.push(project)
+    }
+    localStorage.setItem('projects', JSON.stringify(state.projects))
   },
 }
 
@@ -47,6 +57,23 @@ const actions = {
       commit('setProjects', response.data)
     } catch (error) {
       console.error('Ошибка при загрузке проектов:', error)
+    }
+  },
+  async fetchProjectById(
+    {
+      commit,
+      state,
+    }: { commit: (mutation: string, payload: Project) => void; state: ProjectsState },
+    projectId: NumberOrString,
+  ) {
+    const existingProject = state.projects.find((p) => p.id === projectId)
+    if (!existingProject) {
+      try {
+        const response = await axios.get(`${BASE_API_URL}/projects/${projectId}`)
+        commit('setProject', response.data)
+      } catch (error) {
+        console.error(`Ошибка при загрузке проекта с ID ${projectId}:`, error)
+      }
     }
   },
   async addProject(
@@ -78,20 +105,35 @@ const actions = {
     }
   },
   async deleteProject(
-    { commit }: { commit: (mutation: string, payload: number) => void },
-    projectId: number,
+    {
+      commit,
+      rootGetters,
+      dispatch,
+    }: {
+      commit: (mutation: string, payload: string | number) => void
+      rootGetters: any
+      dispatch: (action: string, payload: any, options?: any) => Promise<void> // Уточняем тип dispatch
+    },
+    projectId: string | number,
   ) {
     try {
+      const tasksToDelete = rootGetters['tasks/getTasksByProjectId'](projectId)
+
+      for (const task of tasksToDelete) {
+        await dispatch('tasks/deleteTask', task.id, { root: true })
+      }
+
       await axios.delete(`${BASE_API_URL}/projects/${projectId}`)
       commit('deleteProject', projectId)
     } catch (error) {
-      console.error('Ошибка при удалении проекта:', error)
+      console.error('Ошибка при удалении проекта или связанных задач:', error)
+      throw error
     }
   },
 }
 
 const getters = {
-  getProjectById: (state: ProjectsState) => (projectId: number) => {
+  getProjectById: (state: ProjectsState) => (projectId: NumberOrString) => {
     return state.projects.find((p) => p.id === projectId)
   },
 }

@@ -9,6 +9,7 @@ export const key: InjectionKey<Store<RootState>> = Symbol()
 export const store = createStore<RootState>({
   state: {
     statuses: ['To Do', 'In Progress', 'Done'] as Statuses[],
+    assignees: ['Іван', 'Марія', 'Олександр'] as String[],
   },
   modules: {
     projects,

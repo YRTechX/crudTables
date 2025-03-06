@@ -1,56 +1,46 @@
 import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
+import type { NumberOrString } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
+
 export interface TasksState {
-  tasks: Record<number, Task[]>
+  tasks: Task[]
   columnWidths: Record<string, number>
 }
 
 const state: TasksState = {
-  tasks: {},
+  tasks: [],
   columnWidths: {},
 }
 
 const mutations = {
-  setTasks(state: TasksState, { projectId, tasks }: { projectId: number; tasks: Task[] }) {
-    state.tasks[projectId] = tasks
+  setTasks(state: TasksState, tasks: Task[]) {
+    state.tasks = tasks
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  },
+  addTask(state: TasksState, task: Task) {
+    state.tasks.push(task)
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
-  addTask(state: TasksState, { projectId, task }: { projectId: number; task: Task }) {
-    if (!state.tasks[projectId]) state.tasks[projectId] = []
-    state.tasks[projectId].push(task)
-    localStorage.setItem('tasks', JSON.stringify(state.tasks))
-  },
-  updateTask(state: TasksState, { projectId, task }: { projectId: number; task: Task }) {
-    const tasks = state.tasks[projectId]
-    const index = tasks.findIndex((t) => t.id === task.id)
+  updateTask(state: TasksState, task: Task) {
+    const index = state.tasks.findIndex((t) => t.id === task.id)
     if (index !== -1) {
-      tasks[index] = task
+      state.tasks[index] = task
     }
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
-  deleteTask(state: TasksState, { projectId, taskId }: { projectId: number; taskId: number }) {
-    if (state.tasks[projectId]) {
-      state.tasks[projectId] = state.tasks[projectId].filter((t) => t.id !== taskId)
-    }
+  deleteTask(state: TasksState, taskId: NumberOrString) {
+    state.tasks = state.tasks.filter((t) => t.id !== taskId)
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
-  reorderTasks(
-    state: TasksState,
-    { projectId, oldIndex, newIndex }: { projectId: number; oldIndex: number; newIndex: number },
-  ) {
-    const tasks = state.tasks[projectId]
-    const [movedTask] = tasks.splice(oldIndex, 1)
-    tasks.splice(newIndex, 0, movedTask)
+  reorderTasks(state: TasksState, { oldIndex, newIndex }: { oldIndex: number; newIndex: number }) {
+    const [movedTask] = state.tasks.splice(oldIndex, 1)
+    state.tasks.splice(newIndex, 0, movedTask)
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
-  sortTasks(
-    state: TasksState,
-    { projectId, key, order }: { projectId: number; key: string; order: 'asc' | 'desc' },
-  ) {
-    const tasks = state.tasks[projectId]
-    tasks.sort((a, b) => {
+  sortTasks(state: TasksState, { key, order }: { key: string; order: 'asc' | 'desc' }) {
+    state.tasks.sort((a, b) => {
       const valueA = a[key as keyof Task]
       const valueB = b[key as keyof Task]
       if (typeof valueA === 'string' && typeof valueB === 'string') {
@@ -70,55 +60,44 @@ const mutations = {
 
 const actions = {
   async fetchTasks(
-    {
-      commit,
-    }: { commit: (mutation: string, payload: { projectId: number; tasks: Task[] }) => void },
-    projectId: number,
+    { commit }: { commit: (mutation: string, payload: Task[]) => void },
+    projectId: string,
   ) {
-    console.log('projectId', projectId)
+    console.log('projectId in fetch tasks', projectId)
     try {
       const response = await axios.get(`${BASE_API_URL}/tasks?projectId=${projectId}`)
       console.log('response with tasks', response)
-      commit('setTasks', { projectId, tasks: response.data })
+      commit('setTasks', response.data)
     } catch (error) {
       console.error('Ошибка при загрузке задач:', error)
     }
   },
-  async addTask(
-    { commit }: { commit: (mutation: string, payload: { projectId: number; task: Task }) => void },
-    { projectId, task }: { projectId: number; task: Task },
-  ) {
+  async addTask({ commit }: { commit: (mutation: string, payload: Task) => void }, task: Task) {
     try {
       const response = await axios.post(`${BASE_API_URL}/tasks`, {
         ...task,
-        projectId,
         id: Date.now(),
       })
-      commit('addTask', { projectId, task: response.data })
+      commit('addTask', response.data)
     } catch (error) {
       console.error('Ошибка при добавлении задачи:', error)
     }
   },
-  async updateTask(
-    { commit }: { commit: (mutation: string, payload: { projectId: number; task: Task }) => void },
-    { projectId, task }: { projectId: number; task: Task },
-  ) {
+  async updateTask({ commit }: { commit: (mutation: string, payload: Task) => void }, task: Task) {
     try {
       const response = await axios.put(`${BASE_API_URL}/tasks/${task.id}`, task)
-      commit('updateTask', { projectId, task: response.data })
+      commit('updateTask', response.data)
     } catch (error) {
       console.error('Ошибка при обновлении задачи:', error)
     }
   },
   async deleteTask(
-    {
-      commit,
-    }: { commit: (mutation: string, payload: { projectId: number; taskId: number }) => void },
-    { projectId, taskId }: { projectId: number; taskId: number },
+    { commit }: { commit: (mutation: string, payload: number) => void },
+    taskId: NumberOrString,
   ) {
     try {
-      await axios.delete(`${BASE_API_URL}/tasks/${taskId}`)
-      commit('deleteTask', { projectId, taskId })
+      await axios.delete(`${BASE_API_URL}/tasks/${String(taskId)}`)
+      commit('deleteTask', taskId)
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)
     }
@@ -126,11 +105,11 @@ const actions = {
 }
 
 const getters = {
-  getTasksByProjectId: (state: TasksState) => (projectId: number) => {
-    return state.tasks[projectId] || []
+  getTasksByProjectId: (state: TasksState) => (projectId: string) => {
+    return state.tasks.filter((task) => task.projectId === projectId)
   },
-  getTaskById: (state: TasksState) => (projectId: number, taskId: number) => {
-    return state.tasks[projectId]?.find((t) => t.id === taskId)
+  getTaskById: (state: TasksState) => (taskId: NumberOrString) => {
+    return state.tasks.find((t) => t.id === taskId)
   },
 }
 

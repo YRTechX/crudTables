@@ -140,14 +140,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import ProjectsTable from '@/components/ProjectsTable.vue'
 import CustomModal from '@/components/CustomModal.vue'
 import type { Project } from '@/types/project'
 import { imitateLoadingTime } from '@/utills/functions'
+import type { DataTableHeaders } from '@/types/common'
+import type { VForm } from 'vuetify/components'
 
-const router = useRouter()
 const store = useStore()
 const search = ref('')
 const statusFilter = ref('')
@@ -159,11 +159,11 @@ const modals = reactive({
 const newProject = ref<Partial<Project>>({ name: '', description: '' })
 const editingProject = ref<Partial<Project> | null>(null)
 const deletingProject = ref<Project | null>(null)
-const createForm = ref()
-const editForm = ref()
-const isLoading = ref(false)
+const createForm = ref<InstanceType<typeof VForm>>()
+const editForm = ref<InstanceType<typeof VForm>>()
+const isLoading = ref<Boolean>(false)
 
-const headers = [
+const headers: DataTableHeaders[] = [
   { title: 'ID', key: 'id', sortable: true, width: 100 },
   { title: 'Назва', key: 'name', sortable: true, width: 200 },
   { title: 'Кількість завдань', key: 'taskCount', sortable: true, width: 150 },

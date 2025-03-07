@@ -7,3 +7,9 @@ export interface RootState {
   projects: Project
   tasks: Task
 }
+export interface DataTableHeaders {
+  title: string
+  key: string
+  sortable: boolean
+  width: number
+}

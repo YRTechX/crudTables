@@ -40,10 +40,11 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
-
+import type { DataTableHeaders } from '@/types/common'
+import type { Project } from '@/types/project'
 const props = defineProps<{
-  headers: any[]
-  projects: any[]
+  headers: DataTableHeaders[]
+  projects: Project[]
 }>()
 
 const emit = defineEmits(['sort', 'edit', 'delete'])

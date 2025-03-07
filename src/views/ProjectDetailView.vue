@@ -22,7 +22,7 @@
       <v-card-title>
         Завдання
         <div class="pt-2 text-end">
-          <v-btn class="blue-btn" @click="modals.createTask = true">
+          <v-btn class="blue-btn" @click="modals.create = true">
             <v-icon left>mdi-plus</v-icon>
             Додати завдання
           </v-btn>
@@ -32,9 +32,7 @@
         <TasksTable
           :headers="taskHeaders"
           :tasks="tasks"
-          @update:widths="updateColumnWidths"
           @sort="sortTasks"
-          @update:status="updateTaskStatus"
           @edit="openEditTaskModal"
           @delete="openDeleteTaskModal"
         />
@@ -43,10 +41,10 @@
 
     <CustomModal
       v-if="newTask"
-      v-model="modals.createTask"
+      v-model="modals.create"
       :loading="isLoading"
       :persistent="isLoading"
-      @update:modelValue="modals.createTask = $event"
+      @update:modelValue="modals.create = $event"
     >
       <template #title>Додати завдання</template>
       <template #content>
@@ -93,7 +91,7 @@
           color="secondary"
           variant="elevated"
           :disabled="isLoading"
-          @click="closeModal('createTask')"
+          @click="closeModal('create')"
           >Скасувати</v-btn
         >
       </template>
@@ -101,10 +99,10 @@
 
     <CustomModal
       v-if="editingTask"
-      v-model="modals.editTask"
+      v-model="modals.edit"
       :loading="isLoading"
       :persistent="isLoading"
-      @update:modelValue="modals.editTask = $event"
+      @update:modelValue="modals.edit = $event"
     >
       <template #title>Редагувати завдання</template>
       <template #content>
@@ -151,7 +149,7 @@
           color="secondary"
           variant="elevated"
           :disabled="isLoading"
-          @click="closeModal('editTask')"
+          @click="closeModal('edit')"
           >Скасувати</v-btn
         >
       </template>
@@ -159,10 +157,10 @@
 
     <CustomModal
       v-if="deletingTask"
-      v-model="modals.deleteTask"
+      v-model="modals.delete"
       :loading="isLoading"
       :persistent="true"
-      @update:modelValue="modals.deleteTask = $event"
+      @update:modelValue="modals.delete = $event"
     >
       <template #title>Підтвердження видалення</template>
       <template #content>
@@ -181,7 +179,7 @@
           color="secondary"
           variant="elevated"
           :disabled="isLoading"
-          @click="closeModal('deleteTask')"
+          @click="closeModal('delete')"
           >Скасувати</v-btn
         >
       </template>
@@ -196,32 +194,30 @@ import { useStore } from '@/store'
 import TasksTable from '@/components/TasksTable.vue'
 import CustomModal from '@/components/CustomModal.vue'
 import type { Task } from '@/types/task'
-import type { Project } from '@/types/project'
 import { imitateLoadingTime } from '@/utills/functions'
-
+import type { ModalState } from '@/types/common'
+import type { VForm } from 'vuetify/components'
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
 const projectId = Number(route.params.projectId)
-const search = ref('')
-const statusFilter = ref('')
-const isLoading = ref(false)
-const newTask = ref({ title: '', assignee: '', status: 'To Do', dueDate: '', projectId: 0 })
-const editingTask = ref<Task>({
-  id: 0,
+/* const search = ref('')
+const statusFilter = ref('') */
+const isLoading = ref<boolean>(false)
+const newTask = ref<Partial<Task>>({ title: '', assignee: '', status: 'To Do', dueDate: '' })
+const editingTask = ref<Partial<Task>>({
   title: '',
   assignee: '',
   status: 'To Do',
   dueDate: '',
-  projectId: 0,
 })
 const deletingTask = ref<Task | null>(null)
-const taskForm = ref()
-const editTaskForm = ref()
-const modals = reactive({
-  createTask: false,
-  editTask: false,
-  deleteTask: false,
+const taskForm = ref<InstanceType<typeof VForm>>()
+const editTaskForm = ref<InstanceType<typeof VForm>>()
+const modals = reactive<ModalState>({
+  create: false,
+  edit: false,
+  delete: false,
 })
 
 const assignees = computed(() => store.state.assignees)
@@ -273,16 +269,7 @@ const dueDateRules = [
 ]
 
 async function sortTasks(oldIndex: number, newIndex: number) {
-  await store.dispatch('tasks/reorderTasks', { oldIndex, newIndex })
-}
-
-async function updateColumnWidths(newWidths: Record<string, number>) {}
-
-async function updateTaskStatus(taskId: number, newStatus: string) {
-  const task = tasks.value.find((t: Task) => t.id === taskId)
-  if (task) {
-    await store.dispatch('tasks/updateTask', { ...task, status: newStatus })
-  }
+  /* await store.dispatch('tasks/reorderTasks', { oldIndex, newIndex }) */
 }
 
 async function saveTask() {
@@ -292,14 +279,14 @@ async function saveTask() {
     await imitateLoadingTime(1500)
     const taskToSave = { ...newTask.value, projectId }
     await store.dispatch('tasks/addTask', taskToSave)
-    closeModal('createTask')
+    closeModal('create')
     isLoading.value = false
   }
 }
 
 function openEditTaskModal(task: Task) {
   editingTask.value = { ...task }
-  modals.editTask = true
+  modals.edit = true
 }
 
 async function editTask() {
@@ -308,44 +295,40 @@ async function editTask() {
     isLoading.value = true
     await imitateLoadingTime(1500)
     await store.dispatch('tasks/updateTask', editingTask.value)
-    closeModal('editTask')
+    closeModal('edit')
     isLoading.value = false
   }
 }
 
 function openDeleteTaskModal(task: Task) {
   deletingTask.value = task
-  modals.deleteTask = true
+  modals.delete = true
 }
 
 async function deleteTask() {
   if (deletingTask.value) {
     isLoading.value = true
     await imitateLoadingTime(1500)
-    await store.dispatch('tasks/deleteTask', deletingTask.value, true)
-    closeModal('deleteTask')
+    await store.dispatch('tasks/deleteTask', {
+      task: deletingTask.value,
+      shouldRefetch: true,
+    })
+    closeModal('delete')
     isLoading.value = false
   }
 }
 
-async function closeModal(modalType: 'createTask' | 'editTask' | 'deleteTask') {
+async function closeModal(modalType: 'create' | 'edit' | 'delete') {
   modals[modalType] = false
   await imitateLoadingTime(100)
   switch (modalType) {
-    case 'createTask':
-      newTask.value = { title: '', assignee: '', status: 'To Do', dueDate: '', projectId: 0 }
+    case 'create':
+      newTask.value = { title: '', assignee: '', status: 'To Do', dueDate: '' }
       break
-    case 'editTask':
-      editingTask.value = {
-        id: 0,
-        title: '',
-        assignee: '',
-        status: 'To Do',
-        dueDate: '',
-        projectId: 0,
-      }
+    case 'edit':
+      editingTask.value = null
       break
-    case 'deleteTask':
+    case 'delete':
       deletingTask.value = null
       break
   }

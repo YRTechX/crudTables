@@ -145,13 +145,13 @@ import ProjectsTable from '@/components/ProjectsTable.vue'
 import CustomModal from '@/components/CustomModal.vue'
 import type { Project } from '@/types/project'
 import { imitateLoadingTime } from '@/utills/functions'
-import type { DataTableHeaders } from '@/types/common'
+import type { DataTableHeaders, ModalState } from '@/types/common'
 import type { VForm } from 'vuetify/components'
 
 const store = useStore()
 const search = ref('')
 const statusFilter = ref('')
-const modals = reactive({
+const modals = reactive<ModalState>({
   create: false,
   edit: false,
   delete: false,

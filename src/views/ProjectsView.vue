@@ -163,12 +163,12 @@ const editForm = ref<InstanceType<typeof VForm>>()
 const isLoading = ref<Boolean>(false)
 
 const headers: DataTableHeaders[] = [
-  { title: 'ID', key: 'id', sortable: true, width: 100 },
-  { title: 'Назва', key: 'name', sortable: true, width: 200 },
-  { title: 'Кількість завдань', key: 'taskCount', sortable: true, width: 150 },
-  { title: 'Статус', key: 'status', sortable: true, width: 150 },
-  { title: 'Дата створення', key: 'createdAt', sortable: false, width: 150 },
-  { title: 'Дії', key: 'actions', sortable: false, width: 150 },
+  { title: 'ID', key: 'id', sortable: true, filterable: false, width: 100 },
+  { title: 'Назва', key: 'name', sortable: true, filterable: true, width: 200 },
+  { title: 'Кількість завдань', key: 'taskCount', sortable: true, filterable: false, width: 150 },
+  { title: 'Статус', key: 'status', sortable: true, filterable: true, width: 150 },
+  { title: 'Дата створення', key: 'createdAt', sortable: false, filterable: false, width: 150 },
+  { title: 'Дії', key: 'actions', sortable: false, filterable: false, width: 150 },
 ]
 const statuses = computed(() => store.state.statuses)
 const projects = computed(() => store.state.projects.projects)

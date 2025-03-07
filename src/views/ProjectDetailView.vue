@@ -243,12 +243,12 @@ onMounted(async () => {
 })
 
 const taskHeaders = [
-  { title: 'ID', key: 'id', sortable: false, width: 100 },
-  { title: 'Назва', key: 'title', sortable: false, width: 200 },
-  { title: 'Виконавець', key: 'assignee', sortable: false, width: 150 },
-  { title: 'Статус', key: 'status', sortable: true, width: 150 },
-  { title: 'Термін', key: 'dueDate', sortable: true, width: 150 },
-  { title: 'Дії', key: 'actions', sortable: false, width: 100 },
+  { title: 'ID', key: 'id', sortable: false, filterable: false, width: 100 },
+  { title: 'Назва', key: 'title', sortable: false, filterable: false, width: 200 },
+  { title: 'Виконавець', key: 'assignee', sortable: false, filterable: true, width: 150 },
+  { title: 'Статус', key: 'status', sortable: true, filterable: true, width: 150 },
+  { title: 'Термін', key: 'dueDate', sortable: true, filterable: false, width: 150 },
+  { title: 'Дії', key: 'actions', sortable: false, filterable: false, width: 100 },
 ]
 
 const dueDateRules = [

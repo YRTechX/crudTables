@@ -24,3 +24,4 @@ export interface SortItem {
   key: string
   order: 'asc' | 'desc'
 }
+export type Filters = Record<string, any>

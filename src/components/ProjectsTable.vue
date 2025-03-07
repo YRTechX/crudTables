@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, nextTick, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import type { Project } from '@/types/project'
@@ -173,10 +173,14 @@ const filteredProjects = computed(() => {
   return props.projects.filter((project) => {
     return Object.entries(appliedFilters.value).every(([key, value]) => {
       if (value === null || value === '') return true
-      if (key === 'name') {
-        return project.name.toLowerCase().includes(value.toLowerCase())
+      switch (key) {
+        case 'name':
+          return project.name?.toLowerCase().includes(value.toLowerCase())
+        case 'status':
+          return project.status === value
+        default:
+          return String(project[key]) === String(value)
       }
-      return project[key] === value
     })
   })
 })
@@ -331,6 +335,14 @@ onMounted(async () => {
     await store.dispatch('projects/loadSorting')
     sortBy.value = store.state.projects.sorting
   }
+  if (Object.values(store.state.projects.filters).length) {
+    appliedFilters.value = store.state.projects.filters
+    localFilters.value = store.state.projects.filters
+  } else {
+    await store.dispatch('projects/loadFilters')
+    appliedFilters.value = store.state.projects.filters
+    localFilters.value = store.state.projects.filters
+  }
 
   await nextTick()
   const table = document.querySelector('table')
@@ -342,6 +354,14 @@ onUnmounted(() => {
   document.removeEventListener('mousemove', mousemoveHandler!)
   document.removeEventListener('mouseup', mouseupHandler!)
 })
+watch(
+  appliedFilters,
+  (newFilters) => {
+    console.log('appliedFilters', newFilters)
+    store.dispatch('projects/saveFilters', newFilters)
+  },
+  { deep: true },
+)
 
 const handleSortChange = (newSort: SortItem[]) => {
   store.dispatch('projects/saveSorting', newSort)

@@ -159,7 +159,7 @@ const actions = {
     }
     commit('SET_SORTING', sorting)
   },
-  loadSorting({ commit }: { commit: { mutation: string; payload: SortItem[] } }) {
+  loadSorting({ commit }: { commit: (mutation: string, payload: SortItem[]) => void }) {
     try {
       const storedSorting = localStorage.getItem('projectsTableSorting')
       if (!storedSorting) return

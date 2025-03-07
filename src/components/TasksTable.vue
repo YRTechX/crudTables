@@ -4,17 +4,15 @@
     :items="tasks"
     :items-per-page="10"
     class="elevation-1 custom-header"
-    :sort-by="sortBy"
-    @update:sort-by="updateSort"
+    v-model:sort-by="sortBy"
+    @update:sort-by="handleSortChange"
   >
     <template v-slot:item="{ item }">
       <tr style="cursor: pointer">
         <td>{{ item.id }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.assignee }}</td>
-        <td>
-          {{ item.status }}
-        </td>
+        <td>{{ item.status }}</td>
         <td>{{ item.dueDate }}</td>
         <td>
           <v-btn
@@ -37,19 +35,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useStore } from '@/store'
-import type { DataTableHeaders } from '@/types/common'
+import type { DataTableHeaders, SortItem } from '@/types/common'
 import type { Task } from '@/types/task'
+
 const props = defineProps<{
   headers: DataTableHeaders[]
   tasks: Task[]
 }>()
 
-const emit = defineEmits(['update:widths', 'sort', 'update:status', 'edit', 'delete'])
-
+const emit = defineEmits(['edit', 'delete'])
 const store = useStore()
-const sortBy = ref([{ key: 'name', order: 'asc' }])
+
+const sortBy = ref<SortItem[]>([])
 
 const columnWidths = ref<Record<string, number>>(initializeWidths())
 
@@ -58,8 +57,11 @@ let nxtCol: HTMLTableCellElement | undefined
 let pageX: number | undefined
 let curColWidth: number | undefined
 let nxtColWidth: number | undefined
+let mousemoveHandler: ((e: MouseEvent) => void) | null = null
+let mouseupHandler: (() => void) | null = null
+let resizeObserver: ResizeObserver | null = null
 
-function initializeWidths() {
+function initializeWidths(): Record<string, number> {
   const savedWidths = localStorage.getItem('columnWidths')
   if (savedWidths) {
     return JSON.parse(savedWidths)
@@ -68,16 +70,7 @@ function initializeWidths() {
   if (Object.keys(stateWidths).length > 0) {
     return stateWidths
   }
-  return Object.fromEntries(
-    [
-      { key: 'id', text: 'ID' },
-      { key: 'title', text: 'Title' },
-      { key: 'assignee', text: 'Assignee' },
-      { key: 'status', text: 'Status' },
-      { key: 'dueDate', text: 'Due Date' },
-      { key: 'actions', text: 'Actions' },
-    ].map((header) => [header.key, 150]),
-  )
+  return Object.fromEntries(props.headers.map((header) => [header.key, header.width || 150]))
 }
 
 function saveColumnWidths() {
@@ -110,15 +103,11 @@ function resizableGrid(table: HTMLElement) {
     setListeners(div)
   }
 
-  const resizeObserver = new ResizeObserver(updateResizerHeight)
+  resizeObserver = new ResizeObserver(updateResizerHeight)
   resizeObserver.observe(table)
 
-  onUnmounted(() => {
-    resizeObserver.disconnect()
-  })
-
   function setListeners(div: HTMLDivElement) {
-    const mousemoveHandler = (e: MouseEvent) => {
+    mousemoveHandler = (e: MouseEvent) => {
       if (!curCol) return
 
       const diffX = e.pageX - (pageX || 0)
@@ -133,7 +122,7 @@ function resizableGrid(table: HTMLElement) {
       })
     }
 
-    const mouseupHandler = () => {
+    mouseupHandler = () => {
       if (curCol && 'cellIndex' in curCol) {
         const newCurWidth = parseFloat(curCol.style.width || curColWidth?.toString() || '0')
         columnWidths.value[props.headers[curCol.cellIndex].key] = newCurWidth
@@ -147,8 +136,8 @@ function resizableGrid(table: HTMLElement) {
 
       curCol = nxtCol = undefined
       pageX = curColWidth = nxtColWidth = undefined
-      document.removeEventListener('mousemove', mousemoveHandler)
-      document.removeEventListener('mouseup', mouseupHandler)
+      document.removeEventListener('mousemove', mousemoveHandler!)
+      document.removeEventListener('mouseup', mouseupHandler!)
     }
 
     div.addEventListener('mousedown', (e: MouseEvent) => {
@@ -176,12 +165,12 @@ function resizableGrid(table: HTMLElement) {
         nxtColWidth = nextCell.offsetWidth - padding
       }
 
-      document.addEventListener('mousemove', mousemoveHandler)
-      document.addEventListener('mouseup', mouseupHandler)
+      document.addEventListener('mousemove', mousemoveHandler!)
+      document.addEventListener('mouseup', mouseupHandler!)
     })
   }
 
-  function createDiv(height: number) {
+  function createDiv(height: number): HTMLDivElement {
     const div = document.createElement('div')
     div.style.top = '0'
     div.style.right = '0'
@@ -191,35 +180,60 @@ function resizableGrid(table: HTMLElement) {
     div.style.userSelect = 'none'
     div.style.height = `${height}px`
     div.style.borderRight = '2px solid transparent'
-
     return div
   }
 
-  function paddingDiff(col: HTMLElement) {
+  function paddingDiff(col: HTMLElement): number {
     if (getStyleVal(col, 'box-sizing') === 'border-box') return 0
     const padLeft = parseInt(getStyleVal(col, 'padding-left') || '0')
     const padRight = parseInt(getStyleVal(col, 'padding-right') || '0')
     return padLeft + padRight
   }
 
-  function getStyleVal(elm: HTMLElement, css: string) {
+  function getStyleVal(elm: HTMLElement, css: string): string {
     return window.getComputedStyle(elm, null).getPropertyValue(css)
   }
 }
-
-onMounted(() => {
-  const table = document.querySelector('table')
-  if (table) {
-    resizableGrid(table)
+const handleSortChange = (newSort: SortItem[]) => {
+  store.dispatch('projects/saveSorting', newSort)
+}
+onMounted(async () => {
+  if (store.state.projects.sorting.length) {
+    sortBy.value = store.state.projects.sorting
+  } else {
+    await store.dispatch('tasks/loadSorting')
+    sortBy.value = store.state.projects.sorting
   }
+
+  await nextTick()
+  const table = document.querySelector('table')
+  if (table) resizableGrid(table)
 })
 
-function updateSort(newSort: any) {
-  emit('sort', newSort[0].key, newSort[0].order)
-}
-/* function updateStatus(taskId: number, newStatus: string) {
-  emit('update:status', taskId, newStatus)
-} */
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  document.removeEventListener('mousemove', mousemoveHandler!)
+  document.removeEventListener('mouseup', mouseupHandler!)
+})
 </script>
 
-<style></style>
+<style scoped>
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 1;
+}
+
+.resizer:hover {
+  background: #0000ff40;
+}
+
+.v-data-table > .v-table__wrapper > table {
+  table-layout: fixed;
+}
+</style>

@@ -243,9 +243,9 @@ onMounted(async () => {
 })
 
 const taskHeaders = [
-  { title: 'ID', key: 'id', sortable: true, width: 100 },
-  { title: 'Назва', key: 'title', sortable: true, width: 200 },
-  { title: 'Виконавець', key: 'assignee', sortable: true, width: 150 },
+  { title: 'ID', key: 'id', sortable: false, width: 100 },
+  { title: 'Назва', key: 'title', sortable: false, width: 200 },
+  { title: 'Виконавець', key: 'assignee', sortable: false, width: 150 },
   { title: 'Статус', key: 'status', sortable: true, width: 150 },
   { title: 'Термін', key: 'dueDate', sortable: true, width: 150 },
   { title: 'Дії', key: 'actions', sortable: false, width: 100 },

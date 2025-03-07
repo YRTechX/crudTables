@@ -48,7 +48,7 @@ const props = defineProps<{
   projects: Project[]
 }>()
 
-const emit = defineEmits(['sort', 'edit', 'delete'])
+const emit = defineEmits(['edit', 'delete'])
 
 const router = useRouter()
 const store = useStore()

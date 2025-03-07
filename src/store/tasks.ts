@@ -2,7 +2,7 @@ import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
-
+import type { SortItem } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 
 const toast = useToast()
@@ -10,11 +10,13 @@ const toast = useToast()
 export interface TasksState {
   tasks: Task[]
   columnWidths: Record<string, number>
+  sorting: SortItem[]
 }
 
 const state: TasksState = {
   tasks: [],
   columnWidths: {},
+  sorting: [],
 }
 
 const mutations = {
@@ -58,6 +60,9 @@ const mutations = {
   updateColumnWidths(state: TasksState, widths: Record<string, number>) {
     state.columnWidths = widths
     localStorage.setItem('taskColumnWidths', JSON.stringify(widths))
+  },
+  SET_SORTING(state: TasksState, sorting: SortItem[]) {
+    state.sorting = sorting
   },
 }
 
@@ -132,6 +137,45 @@ const actions = {
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)
       toast.error('Помилка при видаленні завдання')
+    }
+  },
+  saveSorting(
+    { commit }: { commit: (mutation: string, payload: SortItem[]) => void },
+    sorting: SortItem[],
+  ) {
+    try {
+      localStorage.setItem('tasksTableSorting', JSON.stringify(sorting))
+    } catch (e) {
+      console.error('Storage save sorting error', e)
+    }
+    commit('SET_SORTING', sorting)
+  },
+  loadSorting({ commit }: { commit: (mutation: string, payload: SortItem[]) => void }) {
+    try {
+      const storedSorting = localStorage.getItem('tasksTableSorting')
+      if (!storedSorting) return
+
+      const parsed: unknown = JSON.parse(storedSorting)
+      const isValid =
+        Array.isArray(parsed) &&
+        parsed.every(
+          (item) =>
+            typeof item === 'object' &&
+            'key' in item &&
+            'order' in item &&
+            typeof item.key === 'string' &&
+            ['asc', 'desc'].includes(item.order),
+        )
+
+      if (isValid) {
+        commit('SET_SORTING', parsed as SortItem[])
+      } else {
+        console.error('Невалидные данные сортировки:', parsed)
+        commit('SET_SORTING', [])
+      }
+    } catch (e) {
+      console.error('Ошибка загрузки сортировки:', e)
+      commit('SET_SORTING', [])
     }
   },
 }

@@ -1,7 +1,6 @@
 import type { Module } from 'vuex'
 import { Project } from '@/types/project'
 import axios from 'axios'
-import type { Statuses, NumberOrString } from '@/types/common'
 import { useToast } from 'vue-toastification'
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
@@ -34,7 +33,7 @@ const mutations = {
     }
     localStorage.setItem('projects', JSON.stringify(state.projects))
   },
-  deleteProject(state: ProjectsState, projectId: NumberOrString) {
+  deleteProject(state: ProjectsState, projectId: number) {
     state.projects = state.projects.filter((p) => p.id !== projectId)
     localStorage.setItem('projects', JSON.stringify(state.projects))
   },
@@ -69,7 +68,7 @@ const actions = {
       commit,
       state,
     }: { commit: (mutation: string, payload: Project) => void; state: ProjectsState },
-    projectId: NumberOrString,
+    projectId: number,
   ) {
     try {
       const response = await axios.get(`${BASE_API_URL}/projects/${projectId}`)
@@ -119,11 +118,11 @@ const actions = {
       rootGetters,
       dispatch,
     }: {
-      commit: (mutation: string, payload: string | number) => void
+      commit: (mutation: string, payload: number) => void
       rootGetters: any
       dispatch: (action: string, payload: any, options?: any) => Promise<void>
     },
-    projectId: string | number,
+    projectId: number,
   ) {
     try {
       const tasksToDelete = rootGetters['tasks/getTasksByProjectId'](projectId)
@@ -144,7 +143,7 @@ const actions = {
 }
 
 const getters = {
-  getProjectById: (state: ProjectsState) => (projectId: NumberOrString) => {
+  getProjectById: (state: ProjectsState) => (projectId: number) => {
     return state.projects.find((p) => p.id === projectId)
   },
 }

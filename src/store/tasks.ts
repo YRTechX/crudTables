@@ -1,7 +1,6 @@
 import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
-import type { NumberOrString } from '@/types/common'
 import { useToast } from 'vue-toastification'
 
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
@@ -34,7 +33,7 @@ const mutations = {
     }
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
-  deleteTask(state: TasksState, taskId: NumberOrString) {
+  deleteTask(state: TasksState, taskId: number) {
     state.tasks = state.tasks.filter((t) => t.id !== taskId)
     localStorage.setItem('tasks', JSON.stringify(state.tasks))
   },
@@ -65,7 +64,7 @@ const mutations = {
 const actions = {
   async fetchTasks(
     { commit }: { commit: (mutation: string, payload: Task[]) => void },
-    projectId: string,
+    projectId: number,
   ) {
     try {
       const response = await axios.get(`${BASE_API_URL}/tasks?projectId=${projectId}`)
@@ -123,7 +122,7 @@ const actions = {
     task: Task,
   ) {
     try {
-      await axios.delete(`${BASE_API_URL}/tasks/${String(task.id)}`)
+      await axios.delete(`${BASE_API_URL}/tasks/${task.id}`)
       commit('deleteTask', task.id)
       toast.success('Завдання успішно видалено!')
 
@@ -136,10 +135,10 @@ const actions = {
 }
 
 const getters = {
-  getTasksByProjectId: (state: TasksState) => (projectId: string) => {
+  getTasksByProjectId: (state: TasksState) => (projectId: number) => {
     return state.tasks.filter((task) => task.projectId === projectId)
   },
-  getTaskById: (state: TasksState) => (taskId: NumberOrString) => {
+  getTaskById: (state: TasksState) => (taskId: number) => {
     return state.tasks.find((t) => t.id === taskId)
   },
 }

@@ -84,7 +84,7 @@
       "id": 11,
       "name": "dfgdf",
       "description": "dfgdfg",
-      "taskCount": 13,
+      "taskCount": 14,
       "status": "To Do",
       "createdAt": "2025-03-06"
     },
@@ -103,6 +103,14 @@
       "taskCount": 0,
       "status": "To Do",
       "createdAt": "2025-03-06"
+    },
+    {
+      "name": "23324",
+      "description": "ssdf",
+      "taskCount": 0,
+      "status": "To Do",
+      "createdAt": "2025-03-07",
+      "id": 14
     }
   ],
   "tasks": [
@@ -225,6 +233,14 @@
       "status": "To Do",
       "dueDate": "2025-03-06",
       "projectId": 11
+    },
+    {
+      "title": "New test task",
+      "assignee": "Олександр",
+      "status": "To Do",
+      "dueDate": "2025-03-07",
+      "projectId": 11,
+      "id": 1741332241023
     }
   ]
 }

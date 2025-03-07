@@ -202,7 +202,7 @@ import { imitateLoadingTime } from '@/utills/functions'
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const projectId = route.params.projectId
+const projectId = Number(route.params.projectId)
 const search = ref('')
 const statusFilter = ref('')
 const isLoading = ref(false)
@@ -235,10 +235,6 @@ const projectItemsForCardList = computed(() => {
   }))
 })
 const tasks = computed(() => store.getters['tasks/getTasksByProjectId'](projectId))
-
-watch(tasks, (newTasks) => {
-  console.log('Tasks updated:', newTasks)
-})
 
 onMounted(async () => {
   const projectsLoaded = store.state.projects.projects.length > 0

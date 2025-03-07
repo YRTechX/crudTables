@@ -1,22 +1,6 @@
 {
   "projects": [
     {
-      "id": 1,
-      "name": "New project",
-      "description": "Opisanie",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": 2,
-      "name": "New project",
-      "description": "dfdf",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": 3,
       "name": "new York",
       "description": "",
@@ -49,27 +33,11 @@
       "createdAt": "2025-03-06"
     },
     {
-      "id": 7,
-      "name": "xcgdfg",
-      "description": "dfgdfg",
-      "taskCount": 2,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": 8,
       "name": "sdfsdf",
       "description": "",
       "taskCount": 0,
       "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": 9,
-      "name": "NAMBAONE 11",
-      "description": "sdfsdfsdfsdgf",
-      "taskCount": 0,
-      "status": "Done",
       "createdAt": "2025-03-06"
     },
     {
@@ -98,22 +66,6 @@
     }
   ],
   "tasks": [
-    {
-      "id": 1000,
-      "title": "dfgdfg",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "23342-04-23",
-      "projectId": 7
-    },
-    {
-      "id": 1001,
-      "title": "ываыв",
-      "assignee": "Іван",
-      "status": "To Do",
-      "dueDate": "12222-02-21",
-      "projectId": 7
-    },
     {
       "id": 1002,
       "title": "sdfgsdf",

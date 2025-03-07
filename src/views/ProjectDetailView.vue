@@ -322,7 +322,7 @@ async function deleteTask() {
   if (deletingTask.value) {
     isLoading.value = true
     await imitateLoadingTime(1500)
-    await store.dispatch('tasks/deleteTask', deletingTask.value)
+    await store.dispatch('tasks/deleteTask', deletingTask.value, true)
     closeModal('deleteTask')
     isLoading.value = false
   }

@@ -117,16 +117,19 @@ const actions = {
       dispatch,
     }: {
       commit: (mutation: string, payload: number) => void
-      dispatch: (action: string, payload: any) => Promise<any>
+      dispatch: (action: string, payload: any, options?: { root: boolean }) => Promise<any>
     },
     task: Task,
+    shouldRefetch: boolean = false,
   ) {
     try {
       await axios.delete(`${BASE_API_URL}/tasks/${task.id}`)
       commit('deleteTask', task.id)
-      toast.success('Завдання успішно видалено!')
 
-      await dispatch('projects/fetchProjectById', task.projectId, { root: true })
+      if (shouldRefetch) {
+        toast.success('Завдання успішно видалено!')
+        await dispatch('projects/fetchProjectById', task.projectId, { root: true })
+      }
     } catch (error) {
       console.error('Ошибка при удалении задачи:', error)
       toast.error('Помилка при видаленні завдання')

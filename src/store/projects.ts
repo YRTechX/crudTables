@@ -127,13 +127,17 @@ const actions = {
     try {
       const tasksToDelete = rootGetters['tasks/getTasksByProjectId'](projectId)
 
-      for (const task of tasksToDelete) {
-        await dispatch('tasks/deleteTask', task, { root: true })
+      if (tasksToDelete && tasksToDelete.length > 0) {
+        for (const task of tasksToDelete) {
+          await dispatch('tasks/deleteTask', task, { root: true })
+        }
+        toast.success('Усі завдання проекту успішно видалено!')
       }
 
+      // Удаляем сам проект
       await axios.delete(`${BASE_API_URL}/projects/${projectId}`)
       commit('deleteProject', projectId)
-      toast.success('Проект успішно видалено!')
+      toast.success('Проект успішно видалено!') // Сообщение об удалении проекта
     } catch (error) {
       console.error('Ошибка при удалении проекта или связанных задач:', error)
       toast.error('Помилка при видаленні проекту або пов’язаних завдань')

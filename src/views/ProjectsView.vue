@@ -11,7 +11,6 @@
         <ProjectsTable
           :headers="headers"
           :projects="filteredProjects"
-          @update:widths="updateColumnWidths"
           @sort="sortProjects"
           @edit="openEditModal"
           @delete="openDeleteModal"
@@ -189,10 +188,6 @@ const filteredProjects = computed(() => {
 
 function sortProjects(key: string, order: 'asc' | 'desc') {
   /* store.commit('projects/sortProjects', { key, order }) */
-}
-
-function updateColumnWidths(newWidths: Record<string, number>) {
-  /* store.commit('projects/updateColumnWidths', newWidths) */
 }
 
 async function closeModal(modalType: 'create' | 'edit' | 'delete') {

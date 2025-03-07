@@ -9,6 +9,7 @@
   --app-main-bg: #f8f9fa;
   --app-table-header-bg: #fafafa;
   --app-main-btn-bg: #1677ff;
+  --app-table-border-radius: 8px;
 }
 .custom-header thead {
   background-color: var(--app-table-header-bg);
@@ -16,4 +17,18 @@
 .blue-btn {
   background-color: var(--app-main-btn-bg) !important;
   color: white !important;
+}
+.v-table .v-table__wrapper > table > tbody > tr > td:not(:last-child),
+.v-table .v-table__wrapper > table > tbody > tr > th:not(:last-child) {
+  border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.v-table .v-table__wrapper table thead tr th:not(:last-child) {
+  border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.v-table {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+  border-radius: var(--app-table-border-radius) !important;
+}
+.resizer:hover {
+  border-right: 2px solid #0000ff !important;
 }

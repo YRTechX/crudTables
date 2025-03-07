@@ -129,7 +129,7 @@ const actions = {
 
       if (tasksToDelete && tasksToDelete.length > 0) {
         for (const task of tasksToDelete) {
-          await dispatch('tasks/deleteTask', task, { root: true })
+          await dispatch('tasks/deleteTask', { task }, { root: true })
         }
         toast.success('Усі завдання проекту успішно видалено!')
       }

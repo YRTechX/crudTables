@@ -119,8 +119,7 @@ const actions = {
       commit: (mutation: string, payload: number) => void
       dispatch: (action: string, payload: any, options?: { root: boolean }) => Promise<any>
     },
-    task: Task,
-    shouldRefetch: boolean = false,
+    { task, shouldRefetch = false }: { task: Task; shouldRefetch?: boolean },
   ) {
     try {
       await axios.delete(`${BASE_API_URL}/tasks/${task.id}`)

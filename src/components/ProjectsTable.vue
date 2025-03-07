@@ -224,9 +224,4 @@ function goToProject(projectId: number) {
 }
 </script>
 
-<style scoped>
-.table-wrapper {
-  position: relative;
-  overflow-x: auto;
-}
-</style>
+<style scoped></style>

@@ -1,39 +1,46 @@
-# .
+# Проект
 
-This template should help get you started developing with Vue 3 in Vite.
+## Описание
 
-## Recommended IDE Setup
+Этот проект основан на Vue 3 и Vuetify, с использованием Vite в качестве сборщика. Включает поддержку управления состоянием через Vuex и маршрутизации через Vue Router. Также используется `json-server` с middleware для автоматического обновления количества задач.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Используемые технологии
 
-## Type Support for `.vue` Imports in TS
+- **Vue 3**
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Vue Router** – маршрутизация
 
-## Customize configuration
+- **Vuex** – управление состоянием
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Vuetify** – UI-компоненты
 
-## Project Setup
+- **Vue Toastification** – уведомления
 
-```sh
-npm install
-```
+- **Axios** – HTTP-запросы
 
-### Compile and Hot-Reload for Development
+- **TypeScript** – строгая типизация
 
-```sh
-npm run dev
-```
+- **Sass** – стилизация
 
-### Type-Check, Compile and Minify for Production
+- **JSON Server + Middleware** – мок-сервер с автообновлением
 
-```sh
-npm run build
-```
+## Установка и запуск
 
-### Lint with [ESLint](https://eslint.org/)
+1. Установите зависимости:
+   ```sh
+   npm install
+   ```
+2. Запустите фронтенд:
+   ```sh
+   npm run dev
+   ```
+3. Запустите JSON-сервер с middleware:
+   ```sh
+   npm run json-middlevare
+   ```
 
-```sh
-npm run lint
-```
+Теперь приложение доступно для разработки!
+
+## Дополнительная информация
+
+Этот проект использует middleware для JSON-сервера, который автоматически обновляет количество задач при изменениях. Это полезно для имитации реального API с динамическими данными.

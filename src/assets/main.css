@@ -32,3 +32,9 @@
 .resizer:hover {
   border-right: 2px solid #0000ff !important;
 }
+.v-data-table__th--sortable .custom-arrow-icon {
+  opacity: 0;
+}
+.v-data-table__th--sortable:hover .custom-arrow-icon {
+  opacity: 0.5;
+}

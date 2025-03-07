@@ -37,9 +37,9 @@ server.post('/tasks', (req, res, next) => {
 })
 
 server.delete('/tasks/:id', (req, res, next) => {
-  const taskId = req.params.id
-  const task = router.db.get('tasks').find({ id: taskId }).value()
+  const taskId = Number(req.params.id)
 
+  const task = router.db.get('tasks').find({ id: taskId }).value()
   if (!task) {
     return res.status(404).json({ error: 'Task not found' })
   }

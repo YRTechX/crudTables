@@ -73,18 +73,10 @@
       "createdAt": "2025-03-06"
     },
     {
-      "id": 10,
-      "name": "dsfgdfgdf",
-      "description": "dfgdfg",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": 11,
       "name": "dfgdf",
       "description": "dfgdfg",
-      "taskCount": 14,
+      "taskCount": 13,
       "status": "To Do",
       "createdAt": "2025-03-06"
     },
@@ -103,14 +95,6 @@
       "taskCount": 0,
       "status": "To Do",
       "createdAt": "2025-03-06"
-    },
-    {
-      "name": "23324",
-      "description": "ssdf",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-07",
-      "id": 14
     }
   ],
   "tasks": [
@@ -181,14 +165,6 @@
     {
       "id": 1008,
       "title": "ываыва",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1009,
-      "title": "dfgdf",
       "assignee": "Марія",
       "status": "To Do",
       "dueDate": "2025-03-06",

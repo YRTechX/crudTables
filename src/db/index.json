@@ -1,14 +1,6 @@
 {
   "projects": [
     {
-      "id": 3,
-      "name": "new York",
-      "description": "",
-      "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
       "id": 4,
       "name": "sdfsdf",
       "description": "",
@@ -28,7 +20,7 @@
       "id": 6,
       "name": "sdfdsf",
       "description": "sdfsdf",
-      "taskCount": 0,
+      "taskCount": 1,
       "status": "To Do",
       "createdAt": "2025-03-06"
     },
@@ -37,14 +29,6 @@
       "name": "sdfsdf",
       "description": "",
       "taskCount": 0,
-      "status": "To Do",
-      "createdAt": "2025-03-06"
-    },
-    {
-      "id": 11,
-      "name": "dfgdf",
-      "description": "dfgdfg",
-      "taskCount": 13,
       "status": "To Do",
       "createdAt": "2025-03-06"
     },
@@ -67,108 +51,12 @@
   ],
   "tasks": [
     {
-      "id": 1002,
-      "title": "sdfgsdf",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1003,
-      "title": "sdfd",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2026-03-12",
-      "projectId": 11
-    },
-    {
-      "id": 1004,
-      "title": "sdfsdf",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2222-12-12",
-      "projectId": 11
-    },
-    {
-      "id": 1005,
-      "title": "dfgdgdf",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1006,
-      "title": "ываыва",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1007,
-      "title": "sdfdf",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1008,
-      "title": "ываыва",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1010,
-      "title": "sdfs",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1011,
-      "title": "sdfsd",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-04-05",
-      "projectId": 11
-    },
-    {
-      "id": 1012,
-      "title": "dfgdf",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1013,
-      "title": "sdfsdf",
-      "assignee": "Марія",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "id": 1014,
-      "title": "dfgfd",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2025-03-06",
-      "projectId": 11
-    },
-    {
-      "title": "New test task",
+      "title": "ывпаыв",
       "assignee": "Олександр",
       "status": "To Do",
       "dueDate": "2025-03-07",
-      "projectId": 11,
-      "id": 1741332241023
+      "projectId": 6,
+      "id": 1741362907526
     }
   ]
 }

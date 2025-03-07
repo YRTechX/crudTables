@@ -11,7 +11,6 @@
         <ProjectsTable
           :headers="headers"
           :projects="filteredProjects"
-          @sort="sortProjects"
           @edit="openEditModal"
           @delete="openDeleteModal"
         />
@@ -168,7 +167,7 @@ const headers: DataTableHeaders[] = [
   { title: 'Назва', key: 'name', sortable: true, width: 200 },
   { title: 'Кількість завдань', key: 'taskCount', sortable: true, width: 150 },
   { title: 'Статус', key: 'status', sortable: true, width: 150 },
-  { title: 'Дата створення', key: 'createdAt', sortable: true, width: 150 },
+  { title: 'Дата створення', key: 'createdAt', sortable: false, width: 150 },
   { title: 'Дії', key: 'actions', sortable: false, width: 150 },
 ]
 const statuses = computed(() => store.state.statuses)
@@ -185,10 +184,6 @@ const filteredProjects = computed(() => {
     return matchesSearch && matchesStatus
   })
 })
-
-function sortProjects(key: string, order: 'asc' | 'desc') {
-  /* store.commit('projects/sortProjects', { key, order }) */
-}
 
 async function closeModal(modalType: 'create' | 'edit' | 'delete') {
   modals[modalType] = false

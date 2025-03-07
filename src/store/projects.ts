@@ -2,7 +2,7 @@ import type { Module } from 'vuex'
 import { Project } from '@/types/project'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
-
+import type { SortItem } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 
 const toast = useToast()
@@ -10,11 +10,13 @@ const toast = useToast()
 export interface ProjectsState {
   projects: Project[]
   columnWidths: Record<string, number>
+  sorting: SortItem[]
 }
 
 const state: ProjectsState = {
   projects: [],
   columnWidths: {},
+  sorting: [],
 }
 
 const mutations = {
@@ -49,6 +51,9 @@ const mutations = {
       state.projects.push(project)
     }
     localStorage.setItem('projects', JSON.stringify(state.projects))
+  },
+  SET_SORTING(state: ProjectsState, sorting: SortItem[]) {
+    state.sorting = sorting
   },
 }
 
@@ -134,14 +139,52 @@ const actions = {
         toast.success('Усі завдання проекту успішно видалено!')
       }
 
-      // Удаляем сам проект
       await axios.delete(`${BASE_API_URL}/projects/${projectId}`)
       commit('deleteProject', projectId)
-      toast.success('Проект успішно видалено!') // Сообщение об удалении проекта
+      toast.success('Проект успішно видалено!')
     } catch (error) {
       console.error('Ошибка при удалении проекта или связанных задач:', error)
       toast.error('Помилка при видаленні проекту або пов’язаних завдань')
       throw error
+    }
+  },
+  saveSorting(
+    { commit }: { commit: (mutation: string, payload: SortItem[]) => void },
+    sorting: SortItem[],
+  ) {
+    try {
+      localStorage.setItem('projectsTableSorting', JSON.stringify(sorting))
+    } catch (e) {
+      console.error('Storage save sorting error', e)
+    }
+    commit('SET_SORTING', sorting)
+  },
+  loadSorting({ commit }: { commit: { mutation: string; payload: SortItem[] } }) {
+    try {
+      const storedSorting = localStorage.getItem('projectsTableSorting')
+      if (!storedSorting) return
+
+      const parsed: unknown = JSON.parse(storedSorting)
+      const isValid =
+        Array.isArray(parsed) &&
+        parsed.every(
+          (item) =>
+            typeof item === 'object' &&
+            'key' in item &&
+            'order' in item &&
+            typeof item.key === 'string' &&
+            ['asc', 'desc'].includes(item.order),
+        )
+
+      if (isValid) {
+        commit('SET_SORTING', parsed as SortItem[])
+      } else {
+        console.error('Невалидные данные сортировки:', parsed)
+        commit('SET_SORTING', [])
+      }
+    } catch (e) {
+      console.error('Ошибка загрузки сортировки:', e)
+      commit('SET_SORTING', [])
     }
   },
 }

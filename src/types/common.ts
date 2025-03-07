@@ -18,3 +18,7 @@ export interface ModalsState {
   edit: boolean
   delete: boolean
 }
+export interface SortItem {
+  key: string
+  order: 'asc' | 'desc'
+}

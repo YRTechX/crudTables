@@ -5,8 +5,8 @@
       :items="projects"
       :items-per-page="10"
       class="elevation-1 custom-header"
-      :sort-by="sortBy"
-      @update:sort-by="updateSort"
+      v-model:sort-by="sortBy"
+      @update:sort-by="handleSortChange"
     >
       <template v-slot:item="{ item }">
         <tr @click="goToProject(item.id)" style="cursor: pointer">
@@ -37,11 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
-import type { DataTableHeaders } from '@/types/common'
 import type { Project } from '@/types/project'
+import type { DataTableHeaders, SortItem } from '@/types/common'
+
 const props = defineProps<{
   headers: DataTableHeaders[]
   projects: Project[]
@@ -51,8 +52,7 @@ const emit = defineEmits(['sort', 'edit', 'delete'])
 
 const router = useRouter()
 const store = useStore()
-const sortBy = ref([{ key: 'name', order: 'asc' }])
-
+const sortBy = ref<SortItem[]>([])
 const columnWidths = ref<Record<string, number>>(initializeWidths())
 
 let curCol: HTMLTableCellElement | undefined
@@ -60,8 +60,11 @@ let nxtCol: HTMLTableCellElement | undefined
 let pageX: number | undefined
 let curColWidth: number | undefined
 let nxtColWidth: number | undefined
+let mousemoveHandler: ((e: MouseEvent) => void) | null = null
+let mouseupHandler: (() => void) | null = null
+let resizeObserver: ResizeObserver | null = null
 
-function initializeWidths() {
+function initializeWidths(): Record<string, number> {
   const savedWidths = localStorage.getItem('columnWidths')
   if (savedWidths) {
     return JSON.parse(savedWidths)
@@ -70,16 +73,7 @@ function initializeWidths() {
   if (Object.keys(stateWidths).length > 0) {
     return stateWidths
   }
-  return Object.fromEntries(
-    [
-      { key: 'id', text: 'ID' },
-      { key: 'name', text: 'Name' },
-      { key: 'taskCount', text: 'Task Count' },
-      { key: 'status', text: 'Status' },
-      { key: 'createdAt', text: 'Created At' },
-      { key: 'actions', text: 'Actions' },
-    ].map((header) => [header.key, 150]),
-  )
+  return Object.fromEntries(props.headers.map((header) => [header.key, header.width || 150]))
 }
 
 function saveColumnWidths() {
@@ -112,15 +106,11 @@ function resizableGrid(table: HTMLElement) {
     setListeners(div)
   }
 
-  const resizeObserver = new ResizeObserver(updateResizerHeight)
+  resizeObserver = new ResizeObserver(updateResizerHeight)
   resizeObserver.observe(table)
 
-  onUnmounted(() => {
-    resizeObserver.disconnect()
-  })
-
   function setListeners(div: HTMLDivElement) {
-    const mousemoveHandler = (e: MouseEvent) => {
+    mousemoveHandler = (e: MouseEvent) => {
       if (!curCol) return
 
       const diffX = e.pageX - (pageX || 0)
@@ -135,7 +125,7 @@ function resizableGrid(table: HTMLElement) {
       })
     }
 
-    const mouseupHandler = () => {
+    mouseupHandler = () => {
       if (curCol && 'cellIndex' in curCol) {
         const newCurWidth = parseFloat(curCol.style.width || curColWidth?.toString() || '0')
         columnWidths.value[props.headers[curCol.cellIndex].key] = newCurWidth
@@ -149,8 +139,8 @@ function resizableGrid(table: HTMLElement) {
 
       curCol = nxtCol = undefined
       pageX = curColWidth = nxtColWidth = undefined
-      document.removeEventListener('mousemove', mousemoveHandler)
-      document.removeEventListener('mouseup', mouseupHandler)
+      document.removeEventListener('mousemove', mousemoveHandler!)
+      document.removeEventListener('mouseup', mouseupHandler!)
     }
 
     div.addEventListener('mousedown', (e: MouseEvent) => {
@@ -178,12 +168,12 @@ function resizableGrid(table: HTMLElement) {
         nxtColWidth = nextCell.offsetWidth - padding
       }
 
-      document.addEventListener('mousemove', mousemoveHandler)
-      document.addEventListener('mouseup', mouseupHandler)
+      document.addEventListener('mousemove', mousemoveHandler!)
+      document.addEventListener('mouseup', mouseupHandler!)
     })
   }
 
-  function createDiv(height: number) {
+  function createDiv(height: number): HTMLDivElement {
     const div = document.createElement('div')
     div.style.top = '0'
     div.style.right = '0'
@@ -193,36 +183,71 @@ function resizableGrid(table: HTMLElement) {
     div.style.userSelect = 'none'
     div.style.height = `${height}px`
     div.style.borderRight = '2px solid transparent'
-
     return div
   }
 
-  function paddingDiff(col: HTMLElement) {
+  function paddingDiff(col: HTMLElement): number {
     if (getStyleVal(col, 'box-sizing') === 'border-box') return 0
     const padLeft = parseInt(getStyleVal(col, 'padding-left') || '0')
     const padRight = parseInt(getStyleVal(col, 'padding-right') || '0')
     return padLeft + padRight
   }
 
-  function getStyleVal(elm: HTMLElement, css: string) {
+  function getStyleVal(elm: HTMLElement, css: string): string {
     return window.getComputedStyle(elm, null).getPropertyValue(css)
   }
 }
 
-onMounted(() => {
-  const table = document.querySelector('table')
-  if (table) {
-    resizableGrid(table)
+onMounted(async () => {
+  if (store.state.projects.sorting.length) {
+    sortBy.value = store.state.projects.sorting
+  } else {
+    await store.dispatch('projects/loadSorting')
+    sortBy.value = store.state.projects.sorting
   }
+
+  await nextTick()
+  const table = document.querySelector('table')
+  if (table) resizableGrid(table)
 })
 
-function updateSort(newSort: any) {
-  emit('sort', newSort[0].key, newSort[0].order)
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  document.removeEventListener('mousemove', mousemoveHandler!)
+  document.removeEventListener('mouseup', mouseupHandler!)
+})
+
+const handleSortChange = (newSort: SortItem[]) => {
+  store.dispatch('projects/saveSorting', newSort)
 }
 
-function goToProject(projectId: number) {
+const goToProject = (projectId: number) => {
   router.push(`/projects/${projectId}`)
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.table-wrapper {
+  position: relative;
+  overflow-x: auto;
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 1;
+}
+
+.resizer:hover {
+  background: #0000ff40;
+}
+
+.v-data-table > .v-table__wrapper > table {
+  table-layout: fixed;
+}
+</style>

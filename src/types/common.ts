@@ -13,6 +13,7 @@ export interface DataTableHeaders {
   sortable: boolean
   width: number
   filterable: boolean
+  filterTitle?: string
 }
 export interface ModalsState {
   create: boolean

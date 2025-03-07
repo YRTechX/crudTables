@@ -164,9 +164,23 @@ const isLoading = ref<Boolean>(false)
 
 const headers: DataTableHeaders[] = [
   { title: 'ID', key: 'id', sortable: true, filterable: false, width: 100 },
-  { title: 'Назва', key: 'name', sortable: true, filterable: true, width: 200 },
+  {
+    title: 'Назва',
+    key: 'name',
+    sortable: true,
+    filterable: true,
+    width: 200,
+    filterTitle: 'Фiльтр за назвою',
+  },
   { title: 'Кількість завдань', key: 'taskCount', sortable: true, filterable: false, width: 150 },
-  { title: 'Статус', key: 'status', sortable: true, filterable: true, width: 150 },
+  {
+    title: 'Статус',
+    key: 'status',
+    sortable: true,
+    filterable: true,
+    width: 150,
+    filterTitle: 'Фiльтр за статусом',
+  },
   { title: 'Дата створення', key: 'createdAt', sortable: false, filterable: false, width: 150 },
   { title: 'Дії', key: 'actions', sortable: false, filterable: false, width: 150 },
 ]

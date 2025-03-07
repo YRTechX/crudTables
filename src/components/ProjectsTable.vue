@@ -8,15 +8,19 @@
       v-model:sort-by="sortBy"
       @update:sort-by="handleSortChange"
     >
-      <!-- Фильтруемые заголовки -->
       <template
         v-for="header in filterableHeaders"
         :key="header.key"
         v-slot:[`header.${header.key}`]="{ column }"
       >
         <div class="header-content">
-          <span class="header-content__column-title">{{ column.title }}</span>
-          <v-menu v-model="menuStates[header.key]" location="end" :close-on-content-click="false">
+          <span>{{ column.title }}</span>
+          <v-menu
+            v-model="menuStates[header.key]"
+            location="end"
+            :close-on-content-click="false"
+            @update:modelValue="handleMenuOpen(header.key)"
+          >
             <template v-slot:activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -30,42 +34,21 @@
 
             <v-card min-width="300">
               <v-card-text>
-                <!-- Фильтр по имени -->
-                <v-text-field
-                  v-if="header.key === 'name'"
-                  v-model="nameFilter"
-                  label="Пошук за назвою"
+                <component
+                  :is="getFilterComponent(header.key)"
+                  v-if="header.key in localFilters"
+                  v-model="localFilters[header.key]"
+                  :items="getFilterOptions(header.key)"
+                  :label="column.filterTitle.toLowerCase()"
                   variant="outlined"
                   clearable
-                  @input="applyFilters"
                   density="compact"
-                ></v-text-field>
-
-                <!-- Фильтр по статусу -->
-                <v-select
-                  v-if="header.key === 'status'"
-                  v-model="statusFilter"
-                  :items="statusOptions"
-                  label="Фiльтр по статусу"
-                  variant="outlined"
-                  clearable
-                  @update:model-value="applyFilters"
-                  density="compact"
-                ></v-select>
+                />
               </v-card-text>
               <v-card-actions>
-                <v-btn size="small" variant="text" @click="clearFilters(header.key)"
-                  >Очистить</v-btn
-                >
-                <v-spacer></v-spacer>
-                <v-btn
-                  class="blue-btn"
-                  size="small"
-                  variant="text"
-                  @click="menuStates[header.key] = false"
-                >
-                  Применить
-                </v-btn>
+                <v-btn @click="clearFilter(header.key)">Очистить</v-btn>
+                <v-spacer />
+                <v-btn color="primary" @click="applyFilter(header.key)"> Применить </v-btn>
               </v-card-actions>
             </v-card>
           </v-menu>
@@ -121,38 +104,66 @@ const columnWidths = ref<Record<string, number>>(initializeWidths())
 const filterableHeaders = computed(() => {
   return props.headers.filter((header) => header.filterable)
 })
-const menuStates = reactive(
-  Object.fromEntries(filterableHeaders.value.map((header) => [header.key, false])),
-)
-
-// Переменные для фильтрации
-const nameFilter = ref<string>('')
-const statusFilter = ref<string | null>(null)
 
 const statusOptions = computed(() => store.state.statuses)
 
-// Вычисляемое свойство для фильтрации проектов
-const filteredProjects = computed(() => {
-  let filtered = [...props.projects]
+const appliedFilters = ref<Record<string, any>>({})
 
-  // Фильтрация по имени (name)
-  if (nameFilter.value) {
-    const searchTerm = nameFilter.value.toLowerCase().trim()
-    filtered = filtered.filter((project) => project.name.toLowerCase().includes(searchTerm))
+const localFilters = ref<Record<string, any>>({})
+
+const menuStates = ref<Record<string, boolean>>({})
+
+const getFilterComponent = (key: string) => {
+  switch (key) {
+    case 'status':
+      return 'v-select'
+    default:
+      return 'v-text-field'
   }
-
-  // Фильтрация по статусу (status)
-  if (statusFilter.value) {
-    filtered = filtered.filter((project) => project.status === statusFilter.value)
-  }
-
-  return filtered
-})
-
-// Применение фильтров (можно оставить пустым, так как computed автоматически обновляет данные)
-function applyFilters() {
-  // Здесь можно добавить дополнительные действия, если нужно, например, сохранить фильтры в стейт
 }
+
+const handleMenuOpen = (key: string) => {
+  if (!(key in localFilters.value)) {
+    localFilters.value = {
+      ...localFilters.value,
+      [key]: '',
+    }
+  }
+}
+
+const getFilterOptions = (key: string) => {
+  switch (key) {
+    case 'status':
+      return statusOptions.value
+    default:
+      return []
+  }
+}
+
+const applyFilter = (key: string) => {
+  appliedFilters.value = {
+    ...appliedFilters.value,
+    [key]: localFilters.value[key],
+  }
+  menuStates.value[key] = false
+}
+
+const clearFilter = (key: string) => {
+  localFilters.value[key] = null
+  appliedFilters.value[key] = null
+}
+
+const filteredProjects = computed(() => {
+  return props.projects.filter((project) => {
+    return Object.entries(appliedFilters.value).every(([key, value]) => {
+      if (value === null || value === '') return true
+      if (key === 'name') {
+        return project.name.toLowerCase().includes(value.toLowerCase())
+      }
+      return project[key] === value
+    })
+  })
+})
 
 let curCol: HTMLTableCellElement | undefined
 let nxtCol: HTMLTableCellElement | undefined

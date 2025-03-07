@@ -1,12 +1,65 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="tasks"
+    :items="filteredTasks"
     :items-per-page="10"
     class="elevation-1 custom-header"
     v-model:sort-by="sortBy"
     @update:sort-by="handleSortChange"
   >
+    <template
+      v-for="header in filterableHeaders"
+      :key="header.key"
+      v-slot:[`header.${header.key}`]="{ column, toggleSort, isSorted, sortBy }"
+    >
+      <div class="header-content">
+        <div class="title-container">
+          <span>{{ column.title }}</span>
+          <v-icon
+            v-if="isSorted(column)"
+            :icon="currentSortDirection(header.key) === 'asc' ? 'mdi-arrow-up' : 'mdi-arrow-down'"
+          />
+          <v-icon class="custom-arrow-icon" v-else-if="header.sortable" icon="mdi-arrow-up" />
+        </div>
+        <v-menu
+          v-model="menuStates[header.key]"
+          location="end"
+          :close-on-content-click="false"
+          @update:modelValue="handleMenuOpen(header.key)"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon="mdi-filter"
+              variant="text"
+              size="small"
+              color="#7C7C7C"
+              density="compact"
+            ></v-btn>
+          </template>
+
+          <v-card min-width="300">
+            <v-card-text>
+              <component
+                :is="getFilterComponent(header.key)"
+                v-if="header.key in localFilters"
+                v-model="localFilters[header.key]"
+                :items="getFilterOptions(header.key)"
+                :label="column.filterTitle.toLowerCase()"
+                variant="outlined"
+                clearable
+                density="compact"
+              />
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="clearFilter(header.key)">Очистить</v-btn>
+              <v-spacer />
+              <v-btn color="primary" @click="applyFilter(header.key)"> Применить </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
+      </div>
+    </template>
     <template v-slot:item="{ item }">
       <tr style="cursor: pointer">
         <td>{{ item.id }}</td>
@@ -35,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 import { useStore } from '@/store'
 import type { DataTableHeaders, SortItem } from '@/types/common'
 import type { Task } from '@/types/task'
@@ -49,8 +102,78 @@ const emit = defineEmits(['edit', 'delete'])
 const store = useStore()
 
 const sortBy = ref<SortItem[]>([])
-
 const columnWidths = ref<Record<string, number>>(initializeWidths())
+const filterableHeaders = computed(() => {
+  return props.headers.filter((header) => header.filterable)
+})
+
+const statusOptions = computed(() => store.state.statuses)
+
+const appliedFilters = ref<Record<string, any>>({})
+
+const localFilters = ref<Record<string, any>>({})
+
+const menuStates = ref<Record<string, boolean>>({})
+
+const currentSortDirection = (key: string): 'asc' | 'desc' | null => {
+  const sortItem = sortBy.value.find((item) => item.key === key)
+  return sortItem ? sortItem.order : null
+}
+const getFilterComponent = (key: string) => {
+  switch (key) {
+    case 'status':
+      return 'v-select'
+    default:
+      return 'v-text-field'
+  }
+}
+
+const handleMenuOpen = (key: string) => {
+  if (!(key in localFilters.value)) {
+    localFilters.value = {
+      ...localFilters.value,
+      [key]: '',
+    }
+  }
+}
+
+const getFilterOptions = (key: string) => {
+  switch (key) {
+    case 'status':
+      return statusOptions.value
+    default:
+      return []
+  }
+}
+
+const applyFilter = (key: string) => {
+  appliedFilters.value = {
+    ...appliedFilters.value,
+    [key]: localFilters.value[key],
+  }
+  menuStates.value[key] = false
+}
+
+const clearFilter = (key: string) => {
+  localFilters.value[key] = null
+  appliedFilters.value[key] = null
+}
+
+const filteredTasks = computed(() => {
+  return props.tasks.filter((task) => {
+    return Object.entries(appliedFilters.value).every(([key, value]) => {
+      if (value === null || value === '') return true
+      switch (key) {
+        case 'assignee':
+          return task.assignee?.toLowerCase().includes(value.toLowerCase())
+        case 'status':
+          return task.status === value
+        default:
+          return String(task[key]) === String(value)
+      }
+    })
+  })
+})
 
 let curCol: HTMLTableCellElement | undefined
 let nxtCol: HTMLTableCellElement | undefined
@@ -195,14 +318,23 @@ function resizableGrid(table: HTMLElement) {
   }
 }
 const handleSortChange = (newSort: SortItem[]) => {
-  store.dispatch('projects/saveSorting', newSort)
+  store.dispatch('tasks/saveSorting', newSort)
 }
+
 onMounted(async () => {
-  if (store.state.projects.sorting.length) {
-    sortBy.value = store.state.projects.sorting
+  if (store.state.tasks.sorting.length) {
+    sortBy.value = store.state.tasks.sorting
   } else {
     await store.dispatch('tasks/loadSorting')
-    sortBy.value = store.state.projects.sorting
+    sortBy.value = store.state.tasks.sorting
+  }
+  if (Object.values(store.state.tasks.filters).length) {
+    appliedFilters.value = store.state.tasks.filters
+    localFilters.value = store.state.tasks.filters
+  } else {
+    await store.dispatch('tasks/loadFilters')
+    appliedFilters.value = store.state.tasks.filters
+    localFilters.value = store.state.tasks.filters
   }
 
   await nextTick()
@@ -215,6 +347,15 @@ onUnmounted(() => {
   document.removeEventListener('mousemove', mousemoveHandler!)
   document.removeEventListener('mouseup', mouseupHandler!)
 })
+
+watch(
+  appliedFilters,
+  (newFilters) => {
+    console.log('appliedFilters', newFilters)
+    store.dispatch('tasks/saveFilters', newFilters)
+  },
+  { deep: true },
+)
 </script>
 
 <style scoped>
@@ -235,5 +376,12 @@ onUnmounted(() => {
 
 .v-data-table > .v-table__wrapper > table {
   table-layout: fixed;
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  &__column-title {
+    flex: 1;
+  }
 }
 </style>

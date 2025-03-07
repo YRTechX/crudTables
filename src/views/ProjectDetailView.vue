@@ -32,7 +32,6 @@
         <TasksTable
           :headers="taskHeaders"
           :tasks="tasks"
-          @sort="sortTasks"
           @edit="openEditTaskModal"
           @delete="openDeleteTaskModal"
         />
@@ -201,8 +200,6 @@ const route = useRoute()
 const router = useRouter()
 const store = useStore()
 const projectId = Number(route.params.projectId)
-/* const search = ref('')
-const statusFilter = ref('') */
 const isLoading = ref<boolean>(false)
 const newTask = ref<Partial<Task>>({ title: '', assignee: '', status: 'To Do', dueDate: '' })
 const editingTask = ref<Partial<Task>>({
@@ -245,8 +242,22 @@ onMounted(async () => {
 const taskHeaders = [
   { title: 'ID', key: 'id', sortable: false, filterable: false, width: 100 },
   { title: 'Назва', key: 'title', sortable: false, filterable: false, width: 200 },
-  { title: 'Виконавець', key: 'assignee', sortable: false, filterable: true, width: 150 },
-  { title: 'Статус', key: 'status', sortable: true, filterable: true, width: 150 },
+  {
+    title: 'Виконавець',
+    key: 'assignee',
+    sortable: false,
+    filterable: true,
+    width: 150,
+    filterTitle: 'Фiльтр за виконацвем',
+  },
+  {
+    title: 'Статус',
+    key: 'status',
+    sortable: true,
+    filterable: true,
+    width: 150,
+    filterTitle: 'Фiльтр за статусом',
+  },
   { title: 'Термін', key: 'dueDate', sortable: true, filterable: false, width: 150 },
   { title: 'Дії', key: 'actions', sortable: false, filterable: false, width: 100 },
 ]
@@ -267,10 +278,6 @@ const dueDateRules = [
     return (year >= 1000 && year <= 9999) || 'Рік має бути чотиризначним числом (наприклад, 2025)'
   },
 ]
-
-async function sortTasks(oldIndex: number, newIndex: number) {
-  /* await store.dispatch('tasks/reorderTasks', { oldIndex, newIndex }) */
-}
 
 async function saveTask() {
   const isValid = await taskForm.value?.validate()

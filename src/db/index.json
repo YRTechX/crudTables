@@ -4,7 +4,7 @@
       "id": 1,
       "name": "Проект 1",
       "description": "Описание проекта 1",
-      "taskCount": 3,
+      "taskCount": 2,
       "status": "Done",
       "createdAt": "2025-03-02"
     },
@@ -3665,14 +3665,6 @@
       "status": "To Do",
       "dueDate": "2025-03-18",
       "projectId": 100
-    },
-    {
-      "title": "dfsgdfg",
-      "assignee": "Олександр",
-      "status": "To Do",
-      "dueDate": "2025-03-13",
-      "projectId": 1,
-      "id": 1741365808985
     }
   ]
 }

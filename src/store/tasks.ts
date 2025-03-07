@@ -2,7 +2,7 @@ import type { Module } from 'vuex'
 import type { Task } from '@/types/task'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
-import type { SortItem } from '@/types/common'
+import type { SortItem, Filters } from '@/types/common'
 const BASE_API_URL = import.meta.env.VITE_BASE_API_URL
 
 const toast = useToast()
@@ -11,12 +11,14 @@ export interface TasksState {
   tasks: Task[]
   columnWidths: Record<string, number>
   sorting: SortItem[]
+  filters: Filters
 }
 
 const state: TasksState = {
   tasks: [],
   columnWidths: {},
   sorting: [],
+  filters: {},
 }
 
 const mutations = {
@@ -63,6 +65,9 @@ const mutations = {
   },
   SET_SORTING(state: TasksState, sorting: SortItem[]) {
     state.sorting = sorting
+  },
+  SET_FILTERS(state: TasksState, filters: Filters) {
+    state.filters = filters
   },
 }
 
@@ -176,6 +181,32 @@ const actions = {
     } catch (e) {
       console.error('Ошибка загрузки сортировки:', e)
       commit('SET_SORTING', [])
+    }
+  },
+  saveFilters(
+    { commit }: { commit: (mutation: string, payload: Filters) => void },
+    filters: Filters,
+  ) {
+    try {
+      localStorage.setItem('tasksTableFilters', JSON.stringify(filters))
+    } catch (e) {
+      console.error('Storage save sorting error', e)
+    }
+    commit('SET_FILTERS', filters)
+  },
+  loadFilters({ commit }: { commit: (mutation: string, payload: Filters) => void }) {
+    try {
+      console.log('loadFilters')
+      const storedFilters = localStorage.getItem('tasksTableFilters')
+      console.log('storedFilters', storedFilters)
+      if (!storedFilters) return
+
+      const parsed: unknown = JSON.parse(storedFilters)
+
+      commit('SET_FILTERS', parsed as Filters)
+    } catch (e) {
+      console.error('Ошибка загрузки фильтров:', e)
+      commit('SET_FILTERS', [])
     }
   },
 }

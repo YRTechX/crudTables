@@ -13,22 +13,15 @@
         :key="header.key"
         v-slot:[`header.${header.key}`]="{ column, toggleSort, isSorted, sortBy }"
       >
-        <div
-          class="header-content"
-          @mouseenter="showHoverIcon = true"
-          @mouseleave="showHoverIcon = false"
-        >
+        <div class="header-content">
           <div class="title-container">
             <span>{{ column.title }}</span>
-            <!-- Иконка активной сортировки -->
             <v-icon
               v-if="isSorted(column)"
               :icon="currentSortDirection(header.key) === 'asc' ? 'mdi-arrow-up' : 'mdi-arrow-down'"
             />
             <v-icon class="custom-arrow-icon" v-else-if="header.sortable" icon="mdi-arrow-up" />
           </div>
-
-          <!-- Фильтр -->
           <v-menu
             v-model="menuStates[header.key]"
             location="end"
@@ -125,6 +118,7 @@ const appliedFilters = ref<Record<string, any>>({})
 const localFilters = ref<Record<string, any>>({})
 
 const menuStates = ref<Record<string, boolean>>({})
+
 const currentSortDirection = (key: string): 'asc' | 'desc' | null => {
   const sortItem = sortBy.value.find((item) => item.key === key)
   return sortItem ? sortItem.order : null

@@ -13,3 +13,8 @@ export interface DataTableHeaders {
   sortable: boolean
   width: number
 }
+export interface ModalsState {
+  create: boolean
+  edit: boolean
+  delete: boolean
+}

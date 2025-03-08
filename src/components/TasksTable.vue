@@ -61,7 +61,13 @@
       </div>
     </template>
     <template v-slot:item="{ item }">
-      <tr style="cursor: pointer">
+      <tr
+        :key="item.id"
+        draggable="true"
+        @dragstart="handleDragStart($event, item)"
+        @dragend="handleDragEnd"
+        style="cursor: grab"
+      >
         <td>{{ item.id }}</td>
         <td>{{ item.title }}</td>
         <td>{{ item.assignee }}</td>
@@ -85,6 +91,20 @@
       </tr>
     </template>
   </v-data-table>
+  <!-- Добавьте после таблицы -->
+  <div v-if="dropZonesVisible" class="drop-zones">
+    <div
+      v-for="zone in dropZones"
+      :key="zone.status"
+      class="drop-zone"
+      :class="[zone.key, { hovered: zone.hovered }]"
+      @dragover.prevent="handleDragOver($event, zone)"
+      @dragleave="handleDragLeave(zone)"
+      @drop="handleDrop(zone.status)"
+    >
+      {{ zone.status }}
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -356,6 +376,46 @@ watch(
   },
   { deep: true },
 )
+
+//drag
+const draggedTask = ref<Task | null>(null)
+const dropZonesVisible = ref<Boolean>(false)
+const dropZones = ref([
+  { status: 'To Do', hovered: false, key: 'toDo' },
+  { status: 'In Progress', hovered: false, key: 'inProgress' },
+  { status: 'Done', hovered: false, key: 'done' },
+])
+
+const handleDragStart = (event, task) => {
+  draggedTask.value = task
+  dropZonesVisible.value = true
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.dropEffect = 'move'
+}
+
+const handleDragEnd = () => {
+  draggedTask.value = null
+  dropZonesVisible.value = false
+  dropZones.value.forEach((z) => (z.hovered = false))
+}
+
+const handleDragOver = (event, zone) => {
+  event.preventDefault()
+  zone.hovered = true
+}
+const handleDragLeave = (zone) => {
+  zone.hovered = false
+}
+
+const handleDrop = (newStatus: string) => {
+  if (draggedTask.value && typeof draggedTask.value === 'object') {
+    store.dispatch('tasks/updateTask', {
+      ...draggedTask.value,
+      status: newStatus,
+    })
+  }
+  handleDragEnd()
+}
 </script>
 
 <style scoped>
@@ -382,6 +442,40 @@ watch(
   justify-content: space-between;
   &__column-title {
     flex: 1;
+  }
+}
+
+.drop-zones {
+  display: flex;
+  pointer-events: none;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.drop-zone {
+  padding: 8px;
+  aspect-ratio: 1;
+  background: #f5f5f5;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  text-align: center;
+  margin: 4px 0;
+  pointer-events: auto;
+  flex: 1;
+  opacity: 0.5;
+  transition: 0.1s ease-in;
+  &.hovered {
+    border-color: #2196f3;
+    opacity: 1;
+  }
+  &.toDo {
+    background-color: #b9f6ca;
+  }
+  &.inProgress {
+    background-color: #ffff8d;
+  }
+  &.done {
+    background-color: #ff8a80;
   }
 }
 </style>
